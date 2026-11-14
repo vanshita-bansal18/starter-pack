@@ -12,16 +12,22 @@
 html,body{height:100%;overflow:hidden;}
 body{font-family:'VT323',monospace;color:#fff;background:radial-gradient(ellipse at 50% 25%,#3a1466 0%,#160832 55%,#0a0418 100%);user-select:none;-webkit-user-select:none;touch-action:none;}
 canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;z-index:1;}
+#layer{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden;}
+.food,.drop{position:absolute;left:0;top:0;width:0;height:0;will-change:transform;}
+.emo{position:absolute;left:0;top:0;line-height:1;white-space:nowrap;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;will-change:transform;}
+.tag{position:absolute;left:0;transform:translateX(-50%);white-space:nowrap;font-family:'VT323',monospace;font-size:19px;line-height:18px;padding:0 7px;border-radius:5px;background:rgba(15,6,35,.88);border:1.5px solid var(--cyan);color:var(--cyan);}
+.food.bad .tag{border-color:#ff3355;color:#ff3355;}
+#sick{font-size:30px;opacity:0;}
 .scan{position:fixed;inset:0;pointer-events:none;z-index:3;background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px);}
-.hud{position:fixed;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top) + 12px) 14px 0;display:flex;gap:8px;align-items:center;pointer-events:none;z-index:2;}
+.hud{position:fixed;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top) + 12px) 14px 0;display:flex;gap:8px;align-items:center;pointer-events:none;z-index:4;}
 .chip{font-family:'Press Start 2P',monospace;font-size:11px;color:var(--cyan);background:rgba(23,11,49,.85);border:2px solid var(--cyan);border-radius:6px;padding:9px 10px;box-shadow:0 0 10px rgba(63,240,255,.6);}
 #lives{margin-left:auto;border-color:var(--pink);box-shadow:0 0 10px rgba(255,63,164,.6);letter-spacing:2px;}
 #mute{pointer-events:auto;cursor:pointer;font-size:14px;padding:6px 9px;border-color:var(--yellow);box-shadow:0 0 10px rgba(255,225,77,.5);}
-.bar{position:fixed;left:14px;right:14px;top:calc(env(safe-area-inset-top) + 56px);height:10px;border:2px solid var(--pink);border-radius:4px;background:rgba(23,11,49,.85);overflow:hidden;z-index:2;pointer-events:none;box-shadow:0 0 10px rgba(255,63,164,.5);}
+.bar{position:fixed;left:14px;right:14px;top:calc(env(safe-area-inset-top) + 56px);height:10px;border:2px solid var(--pink);border-radius:4px;background:rgba(23,11,49,.85);overflow:hidden;z-index:4;pointer-events:none;box-shadow:0 0 10px rgba(255,63,164,.5);}
 .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--yellow));transition:width .25s;}
 .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:22px;z-index:5;background:rgba(5,2,15,.55);touch-action:auto;}
 .hidden{display:none!important;}
-.card{background:var(--panel);max-width:370px;width:100%;padding:28px 22px 24px;border:3px solid var(--pink);border-radius:14px;text-align:center;box-shadow:0 0 18px var(--pink),0 0 44px rgba(255,63,164,.35),inset 0 0 22px rgba(255,63,164,.18);animation:pop .3s ease-out;}
+.card{background:var(--panel);max-width:370px;width:100%;padding:28px 22px 22px;border:3px solid var(--pink);border-radius:14px;text-align:center;box-shadow:0 0 18px var(--pink),0 0 44px rgba(255,63,164,.35),inset 0 0 22px rgba(255,63,164,.18);animation:pop .3s ease-out;}
 @keyframes pop{from{transform:scale(.85);opacity:0}}
 .kicker{font-family:'Press Start 2P',monospace;font-size:9px;letter-spacing:2px;color:var(--cyan);text-shadow:0 0 8px var(--cyan);}
 h1{font-family:'Press Start 2P',monospace;font-size:26px;line-height:1.4;margin-top:14px;color:#fff;text-shadow:0 0 6px var(--pink),0 0 14px var(--pink),0 0 28px var(--pink);animation:flicker 4s infinite;}
@@ -34,10 +40,12 @@ h1{font-family:'Press Start 2P',monospace;font-size:26px;line-height:1.4;margin-
 .letter{text-align:left;max-height:48vh;overflow:auto;touch-action:pan-y;margin-top:6px;}
 .letter p{font-size:22px;}
 .sign{text-align:right;font-size:28px;margin-top:14px;color:var(--pink);text-shadow:0 0 8px var(--pink);}
+.ver{margin-top:16px;font-family:'Press Start 2P',monospace;font-size:8px;opacity:.4;}
 </style>
 </head>
 <body>
 <canvas id="game"></canvas>
+<div id="layer"><div id="sick" class="emo">🤢</div></div>
 <div class="scan"></div>
 
 <div class="hud">
@@ -53,6 +61,7 @@ h1{font-family:'Press Start 2P',monospace;font-size:26px;line-height:1.4;margin-
   <p>Drag to move. Catch his favourites. Eat 24 to clear the level.</p>
   <p class="dodge">AVOID: 🌶️ 🍆 🥒 🥣</p>
   <button class="btn" onclick="startGame()">▶ PRESS START</button>
+  <div class="ver">v4</div>
 </div></div>
 
 <div class="overlay hidden" id="over"><div class="card">
@@ -145,8 +154,8 @@ function toggleMute(){
 document.getElementById('mute').textContent = muted ? '🔇' : '🔊';
 
 /* ===== Setup ===== */
-const EMOJI = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
 const cvs = document.getElementById('game'), ctx = cvs.getContext('2d');
+const layer = document.getElementById('layer'), sick = document.getElementById('sick');
 let W, H, dpr, headW = 120, headH = 120, sprite = null, spritePad = 7;
 let state = 'menu', score = 0, lives = LIVES, items = [], texts = [], parts = [], rain = [], stars = [];
 let spawnT = 0, lastBad = null, t = 0, gridOff = 0;
@@ -199,6 +208,22 @@ function buildSprite(){
   const g = sprite.getContext('2d'); g.shadowColor = 'rgba(255,63,164,.9)'; g.shadowBlur = G; g.drawImage(inner, G, G);
 }
 
+/* ===== Food & rain as page elements (always show in colour) ===== */
+function makeFoodEl(it){
+  const el = document.createElement('div'); el.className = 'food' + (it.bad ? ' bad' : '');
+  const emo = document.createElement('div'); emo.className = 'emo'; emo.style.fontSize = it.s + 'px'; emo.textContent = it.f.e;
+  const tag = document.createElement('div'); tag.className = 'tag'; tag.style.top = (it.s*0.55) + 'px'; tag.textContent = (it.bad ? '✗ ' : '') + it.f.n;
+  el.appendChild(emo); el.appendChild(tag); layer.appendChild(el);
+  it.el = el; it.emo = emo;
+}
+function makeDropEl(r){
+  const el = document.createElement('div'); el.className = 'drop';
+  const emo = document.createElement('div'); emo.className = 'emo'; emo.style.fontSize = r.s + 'px'; emo.textContent = r.e;
+  el.appendChild(emo); layer.appendChild(el); r.el = el; r.emo = emo;
+}
+function clearItems(){ items.forEach(i => i.el.remove()); items = []; }
+function clearRain(){ rain.forEach(r => r.el.remove()); rain = []; }
+
 /* ===== Game flow ===== */
 function show(id){ ['start','over','win'].forEach(o => document.getElementById(o).classList.toggle('hidden', o !== id)); }
 function hud(){
@@ -208,14 +233,18 @@ function hud(){
 }
 function startGame(){
   initAudio(); SFX.start();
-  score = 0; lives = LIVES; items = []; texts = []; parts = []; rain = []; spawnT = 0.8;
+  clearItems(); clearRain();
+  score = 0; lives = LIVES; texts = []; parts = []; spawnT = 0.8;
   P.x = P.tx = W/2; state = 'play'; show(null); hud();
 }
 function end(kind){
-  state = kind; items = [];
+  state = kind; clearItems();
   if (kind === 'win'){
     SFX.win();
-    for (let i = 0; i < 45; i++) rain.push({e:pick(GOOD).e, x:Math.random()*W, y:-Math.random()*H, vy:200+Math.random()*250, rot:Math.random()*6, vr:(Math.random()-.5)*4, s:28+Math.random()*20});
+    for (let i = 0; i < 45; i++){
+      const r = {e:pick(GOOD).e, x:Math.random()*W, y:-Math.random()*H, vy:200+Math.random()*250, rot:Math.random()*6, vr:(Math.random()-.5)*4, s:28+Math.random()*20};
+      makeDropEl(r); rain.push(r);
+    }
     setTimeout(() => show('win'), 1300);
   } else {
     setTimeout(() => SFX.over(), 350);
@@ -227,7 +256,8 @@ function spawn(){
   const bad = Math.random() < (score < 3 ? 0.12 : 0.28);
   const f = bad ? pick(BAD) : pick(GOOD), s = itemSize(), m = s*0.9;
   const speed = (150 + score*7 + Math.random()*40) * (1 + 0.12*Math.floor(score/8)) * Math.max(0.8, H/750);
-  items.push({f, bad, s, x: m + Math.random()*(W - 2*m), y: -s, vy: speed, rot:(Math.random()-.5)*.6, vr:(Math.random()-.5)*2});
+  const it = {f, bad, s, x: m + Math.random()*(W - 2*m), y: -s, vy: speed, rot:(Math.random()-.5)*.6, vr:(Math.random()-.5)*2};
+  makeFoodEl(it); items.push(it);
 }
 function popText(text, color, big){
   texts.push(big ? {text, color, big, x:W/2, y:H*0.36, life:1.4} : {text, color, x:P.x, y:headTop()-12, life:1.3});
@@ -270,16 +300,15 @@ function update(dt){
       it.y += it.vy*dt; it.rot += it.vr*dt;
       if (!it.done && state === 'play' && it.y > top + headH*0.2 && it.y < mouth + headH*0.15 && Math.abs(it.x - P.x) < headW*0.4){ it.done = true; eat(it); }
     }
-    items = items.filter(i => !i.done && i.y < H + 80);
+    items = items.filter(i => { if (i.done || i.y >= H + 80){ i.el.remove(); return false; } return true; });
   }
   texts.forEach(x => { x.y -= 45*dt; x.life -= dt; }); texts = texts.filter(x => x.life > 0);
   parts.forEach(p => { p.vy += 420*dt; p.x += p.vx*dt; p.y += p.vy*dt; p.life -= dt; }); parts = parts.filter(p => p.life > 0);
-  rain.forEach(r => { r.y += r.vy*dt; r.rot += r.vr*dt; }); rain = rain.filter(r => r.y < H + 60);
+  rain.forEach(r => { r.y += r.vy*dt; r.rot += r.vr*dt; });
+  rain = rain.filter(r => { if (r.y >= H + 60){ r.el.remove(); return false; } return true; });
 }
 
 /* ===== Draw ===== */
-function rr(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
-
 function drawScene(){
   const hz = horizon(), cx = W/2;
   for (const s of stars){ ctx.globalAlpha = .35 + .65*Math.abs(Math.sin(t*1.3 + s.p)); ctx.fillStyle = '#fff'; ctx.fillRect(s.x, s.y, s.r, s.r); }
@@ -301,19 +330,6 @@ function drawScene(){
   ctx.stroke();
   ctx.strokeStyle = '#ff3fa4'; ctx.lineWidth = 2; ctx.shadowColor = '#ff3fa4'; ctx.shadowBlur = 14;
   ctx.beginPath(); ctx.moveTo(0, hz); ctx.lineTo(W, hz); ctx.stroke(); ctx.shadowBlur = 0;
-  ctx.fillStyle = '#000';
-}
-
-function drawItem(it){
-  ctx.save(); ctx.translate(it.x, it.y);
-  ctx.save(); ctx.fillStyle = '#000'; ctx.rotate(it.rot); ctx.font = `${it.s}px ${EMOJI}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(it.f.e, 0, 0); ctx.restore();
-  const label = it.bad ? '✗ ' + it.f.n : it.f.n, col = it.bad ? '#ff3355' : '#3ff0ff';
-  ctx.font = '19px VT323, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  const tw = ctx.measureText(label).width + 14, y = it.s*0.55;
-  rr(-tw/2, y, tw, 20, 5); ctx.fillStyle = 'rgba(15,6,35,.88)'; ctx.fill();
-  ctx.lineWidth = 1.5; ctx.strokeStyle = col; ctx.stroke();
-  ctx.fillStyle = col; ctx.fillText(label, 0, y + 10.5);
-  ctx.restore();
 }
 
 function drawHead(){
@@ -328,13 +344,11 @@ function drawHead(){
   const sw = sprite.width/dpr, sh = sprite.height/dpr;
   ctx.drawImage(sprite, -sw/2, -sh + spritePad, sw, sh);
   ctx.restore();
-  if (P.hurt > 0.3){ ctx.fillStyle = '#000'; ctx.font = `30px ${EMOJI}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🤢', P.x + headW*0.5, headTop() + 8); }
 }
 
 function draw(){
   ctx.clearRect(0, 0, W, H);
   drawScene();
-  items.forEach(drawItem);
   for (const p of parts){ ctx.globalAlpha = Math.min(1, p.life*2); ctx.fillStyle = p.c; ctx.fillRect(p.x, p.y, p.s, p.s); }
   ctx.globalAlpha = 1;
   drawHead();
@@ -347,7 +361,19 @@ function draw(){
     ctx.fillStyle = x.color; ctx.fillText(x.text, x.x, x.y);
   }
   ctx.globalAlpha = 1;
-  for (const r of rain){ ctx.save(); ctx.fillStyle = '#000'; ctx.translate(r.x, r.y); ctx.rotate(r.rot); ctx.font = `${r.s}px ${EMOJI}`; ctx.fillText(r.e, 0, 0); ctx.restore(); }
+  // page-element emojis
+  for (const it of items){
+    it.el.style.transform = `translate(${it.x}px,${it.y}px)`;
+    it.emo.style.transform = `translate(-50%,-50%) rotate(${it.rot}rad)`;
+  }
+  for (const r of rain){
+    r.el.style.transform = `translate(${r.x}px,${r.y}px)`;
+    r.emo.style.transform = `translate(-50%,-50%) rotate(${r.rot}rad)`;
+  }
+  if (P.hurt > 0.3){
+    sick.style.opacity = 1;
+    sick.style.transform = `translate(${P.x + headW*0.5}px,${headTop() + 8}px) translate(-50%,-50%)`;
+  } else sick.style.opacity = 0;
 }
 
 let last = performance.now();
