@@ -118,7 +118,7 @@ main{max-width:440px;margin:0 auto;padding:26px 20px 50px;text-align:center}
         <div><b id="cdS">00</b><small>SEC</small></div>
       </div>
       <div class="pop">
-        <a class="btn" id="calApple" download="samay-raina-live.ics">+ Apple / Outlook</a>
+        <a class="btn" id="calApple" href="samay-raina-live.ics">+ Apple / Outlook</a>
         <a class="btn" id="calGoogle" target="_blank" rel="noopener">+ Google Calendar</a>
       </div>
     </div>
@@ -264,7 +264,6 @@ const ics = [
   "BEGIN:VALARM","TRIGGER:-P1D","ACTION:DISPLAY","DESCRIPTION:Samay Raina Live is tomorrow!","END:VALARM",
   "END:VEVENT","END:VCALENDAR"
 ].join("\r\n");
-document.getElementById("calApple").href = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
 document.getElementById("calGoogle").href = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent(TITLE) + "&dates=20270327T093000Z/20270327T113000Z&location=" + encodeURIComponent(LOC) + "&details=" + encodeURIComponent(DESC);
 
 const real = document.getElementById("real");
