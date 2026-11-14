@@ -192,7 +192,7 @@ function fallbackFace(){
 
 function buildSprite(){
   if (!W) return;
-  headW = Math.max(100, Math.min(W*0.3, 170));
+  headW = Math.max(70, Math.min(W*0.22, 140));
   const src = imgOK ? img : fallbackFace();
   headH = headW * (imgOK ? img.naturalHeight/img.naturalWidth : 1);
   const stroke = 5, glow = 16, inPad = stroke + 2; spritePad = inPad + glow;
