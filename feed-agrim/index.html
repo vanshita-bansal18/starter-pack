@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Feed Agrim 🍔</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+:root{--red:#9e1b2c;--cream:#f7f0e3;--paper:#fffaf0;--ink:#2b1d16;--tape:rgba(232,178,58,.75);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Patrick Hand',cursive;color:var(--ink);background-color:var(--cream);
+  background-image:linear-gradient(90deg,rgba(158,27,44,.10) 50%,transparent 50%),linear-gradient(rgba(158,27,44,.10) 50%,transparent 50%);
+  background-size:44px 44px;user-select:none;-webkit-user-select:none;touch-action:none;}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;z-index:1;}
+.flowers{position:fixed;left:0;right:0;bottom:0;height:60px;font-size:40px;line-height:60px;white-space:nowrap;overflow:hidden;text-align:center;z-index:0;pointer-events:none;}
+.hud{position:fixed;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top) + 12px) 16px 0;display:flex;justify-content:space-between;align-items:center;pointer-events:none;z-index:2;}
+.pill{background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:5px 14px;font-size:21px;box-shadow:3px 3px 0 var(--ink);}
+.bar{position:fixed;left:16px;right:16px;top:calc(env(safe-area-inset-top) + 60px);height:12px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);overflow:hidden;z-index:2;pointer-events:none;}
+.bar i{display:block;height:100%;width:0;background:var(--red);transition:width .25s;}
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:22px;z-index:5;background:rgba(43,29,22,.35);touch-action:auto;}
+.hidden{display:none!important;}
+.card{position:relative;background:var(--paper);max-width:380px;width:100%;padding:32px 24px 24px;border-radius:4px;box-shadow:0 12px 30px rgba(0,0,0,.25);text-align:center;transform:rotate(-1.2deg);animation:pop .35s ease-out;}
+.card::before,.card::after{content:'';position:absolute;top:-10px;width:92px;height:26px;background:var(--tape);}
+.card::before{left:-16px;transform:rotate(-32deg);} .card::after{right:-16px;transform:rotate(32deg);}
+@keyframes pop{from{transform:rotate(-1.2deg) scale(.85);opacity:0}}
+.kicker{font-family:'Playfair Display',serif;font-weight:700;letter-spacing:3px;font-size:12px;text-transform:uppercase;color:var(--red);}
+h1{font-family:'Playfair Display',serif;font-weight:900;font-size:46px;color:var(--red);line-height:1;letter-spacing:-1px;margin-top:6px;}
+.card p{font-size:21px;line-height:1.3;margin-top:12px;}
+.dodge{font-size:18px;margin-top:10px;opacity:.85;}
+.letter{text-align:left;max-height:52vh;overflow:auto;touch-action:pan-y;}
+.letter p{font-size:21px;}
+.sign{text-align:right;font-size:26px;margin-top:14px;}
+.btn{margin-top:20px;font-family:'Playfair Display',serif;font-weight:700;font-size:20px;background:var(--red);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:12px 30px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink);}
+</style>
+</head>
+<body>
+<div class="flowers" id="flowers"></div>
+<canvas id="game"></canvas>
+
+<div class="hud"><div class="pill" id="score">🍽️ 0 / 24</div><div class="pill" id="lives">❤️❤️❤️</div></div>
+<div class="bar"><i id="fill"></i></div>
+
+<div class="overlay" id="start"><div class="card">
+  <div class="kicker">Birthday Magazine presents</div>
+  <h1>Feed Agrim</h1>
+  <p>Drag to move him around. Catch all his favourites. Eat <b>24</b> things to unlock a little something. 🎂</p>
+  <div class="dodge">But dodge these: 🌶️ 🍆 🥒 🥣</div>
+  <button class="btn" onclick="startGame()">Let's eat 🍔</button>
+</div></div>
+
+<div class="overlay hidden" id="over"><div class="card">
+  <div class="kicker">Game over</div>
+  <h1>Uh oh.</h1>
+  <p id="overMsg">Agrim is still hungry.</p>
+  <button class="btn" onclick="startGame()">Try again</button>
+</div></div>
+
+<div class="overlay hidden" id="win"><div class="card">
+  <div class="kicker">Birthday edition</div>
+  <h1>24 for 24! 🎉</h1>
+  <div class="letter">
+    <p>Happy birthday, you bottomless pit. 🍔</p>
+    <p>You just ate 24 things without a single complaint, which is honestly the most <i>you</i> thing ever.</p>
+    <p>I hope this year is full of sourdough pizzas, midnight McVeggies, butter chicken worth the food coma, and every meal I get to eat sitting across from you. Watching you enjoy your food is one of my favourite things in the world. So is everything else about you.</p>
+    <p>I'll always share my fries with you. (Most of them.)</p>
+    <div class="sign">— Vanshita 💛</div>
+  </div>
+  <button class="btn" onclick="startGame()">Eat again</button>
+</div></div>
+
+<script>
+/* ===== Settings you can tweak ===== */
+const PHOTO = 'agrim.png';   // his cutout, in the same folder
+const MOUTH = 0.68;          // where his mouth is (0 = top of photo, 1 = bottom)
+const TARGET = 24, LIVES = 3;
+
+const GOOD = [
+  {e:'🍔',n:'McVeggie',l:['McVeggie supremacy','2am McD run 🍟','Extra sauce pls']},
+  {e:'🍕',n:'Sourdough pizza',l:['Sourdough snob 🍕','Crust? Eaten.']},
+  {e:'🧆',n:'Hummus platter',l:['Hummus? Hummus.','Fancy boy 🫒']},
+  {e:'🍚',n:'Rice bowl',l:['Bowl of everything','Fancy bowl unlocked']},
+  {e:'🍫',n:'Brownie',l:['Gooey 🤤','Brownie points!']},
+  {e:'🥤',n:'Choco shake',l:['Thick shake szn','Slurrrp']},
+  {e:'🍺',n:'Corona',l:['Lime in it 🍋','Cheers!']},
+  {e:'🍛',n:'Butter chicken',l:['Extra butter','Food coma loading…']},
+  {e:'🍳',n:'Bread omelette',l:['A true classic','Bread omelette nostalgia']},
+  {e:'🥃',n:'Whiskey',l:['Neat. 🥃','Smooth.']},
+  {e:'🍖',n:'Mutton',l:['Mutton > everything','Nom nom nom']},
+  {e:'🌮',n:'Nachos',l:['Loaded (no jalapeños)','Crunch!']},
+  {e:'🍤',n:'Prawns',l:['Prawn star 🍤','Shrimply the best']},
+];
+const BAD = [
+  {e:'🌶️',n:'Jalapeño',l:['NOT on my nachos 🤢','Spicy betrayal']},
+  {e:'🍆',n:'Brinjal',l:['Brinjal?? Betrayal.','Ew, baingan']},
+  {e:'🥒',n:'Karela',l:['KARELA. Why 😭','Too bitter 😖']},
+  {e:'🥣',n:'Dalia',l:['Dalia is not food','Hospital food 😩']},
+];
+
+/* ===== Setup ===== */
+const EMOJI = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+const cvs = document.getElementById('game'), ctx = cvs.getContext('2d');
+document.getElementById('flowers').textContent = '🌻'.repeat(30);
+let W, H, dpr, headW = 120, headH = 120, sprite = null, spritePad = 7;
+let state = 'menu', score = 0, lives = LIVES, items = [], texts = [], rain = [], spawnT = 0, lastBad = null, t = 0;
+const P = {x:0, tx:0, vx:0, chomp:0, hurt:0, moved:-1};
+const keys = {l:false, r:false};
+const pick = a => a[Math.floor(Math.random()*a.length)];
+
+const img = new Image(); let imgOK = false, imgDone = false;
+img.onload = () => { imgOK = true; imgDone = true; buildSprite(); };
+img.onerror = () => { imgOK = false; imgDone = true; buildSprite(); };
+
+function resize(){
+  dpr = Math.min(window.devicePixelRatio || 1, 3);
+  W = innerWidth; H = innerHeight;
+  cvs.width = W*dpr; cvs.height = H*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  buildSprite();
+  if (state === 'menu' || !P.x) P.x = P.tx = W/2;
+  P.x = Math.min(Math.max(P.x, headW/2), W - headW/2); P.tx = P.x;
+}
+
+function fallbackFace(){
+  const c = document.createElement('canvas'); c.width = c.height = 200; const g = c.getContext('2d');
+  g.fillStyle='#c68a5e'; g.beginPath(); g.arc(100,105,78,0,Math.PI*2); g.fill();
+  g.fillStyle='#1d1410'; g.beginPath(); g.arc(100,85,84,Math.PI*1.05,Math.PI*1.95); g.fill();
+  g.beginPath(); g.moveTo(26,110); g.quadraticCurveTo(100,235,174,110); g.quadraticCurveTo(100,165,26,110); g.fill();
+  g.fillStyle='#7a1f1f'; g.beginPath(); g.ellipse(100,140,24,18,0,0,Math.PI*2); g.fill();
+  g.fillStyle='#1d1410'; g.beginPath(); g.arc(72,98,7,0,Math.PI*2); g.fill(); g.beginPath(); g.arc(128,98,7,0,Math.PI*2); g.fill();
+  return c;
+}
+
+function buildSprite(){
+  if (!W) return;
+  headW = Math.max(100, Math.min(W*0.3, 170));
+  const src = imgOK ? img : fallbackFace();
+  headH = headW * (imgOK ? img.naturalHeight/img.naturalWidth : 1);
+  const stroke = 5; spritePad = stroke + 2;
+  const w = Math.round(headW*dpr), h = Math.round(headH*dpr), s = stroke*dpr, p = Math.ceil(spritePad*dpr);
+  const sil = document.createElement('canvas'); sil.width = w; sil.height = h;
+  const sc = sil.getContext('2d'); sc.drawImage(src,0,0,w,h);
+  sc.globalCompositeOperation = 'source-in'; sc.fillStyle = '#fff'; sc.fillRect(0,0,w,h);
+  sprite = document.createElement('canvas'); sprite.width = w + p*2; sprite.height = h + p*2;
+  const g = sprite.getContext('2d');
+  for (let k = 0; k < 24; k++){ const r = k/24*Math.PI*2; g.drawImage(sil, p + Math.cos(r)*s, p + Math.sin(r)*s); }
+  g.drawImage(src, p, p, w, h);
+}
+
+/* ===== Game flow ===== */
+const ground = () => H - 62;
+const headTop = () => ground() - headH;
+const itemSize = () => Math.max(38, Math.min(W*0.11, 56));
+
+function show(id){ ['start','over','win'].forEach(o => document.getElementById(o).classList.toggle('hidden', o !== id)); }
+function hud(){
+  document.getElementById('score').textContent = `🍽️ ${score} / ${TARGET}`;
+  document.getElementById('lives').textContent = '❤️'.repeat(Math.max(lives,0)) + '🤍'.repeat(LIVES - Math.max(lives,0));
+  document.getElementById('fill').style.width = Math.min(100, score/TARGET*100) + '%';
+}
+function startGame(){
+  score = 0; lives = LIVES; items = []; texts = []; rain = []; spawnT = 0.7;
+  P.x = P.tx = W/2; state = 'play'; show(null); hud();
+}
+function end(kind){
+  state = kind; items = [];
+  if (kind === 'win'){
+    for (let i = 0; i < 45; i++) rain.push({e:pick(GOOD).e, x:Math.random()*W, y:-Math.random()*H, vy:200+Math.random()*250, rot:Math.random()*6, vr:(Math.random()-.5)*4, s:28+Math.random()*20});
+    setTimeout(() => show('win'), 1200);
+  } else {
+    document.getElementById('overMsg').textContent = `Taken down by ${lastBad.n} ${lastBad.e}. Agrim is still hungry.`;
+    setTimeout(() => show('over'), 700);
+  }
+}
+function spawn(){
+  const bad = Math.random() < (score < 3 ? 0.12 : 0.28);
+  const f = bad ? pick(BAD) : pick(GOOD), s = itemSize(), m = s*0.9;
+  items.push({f, bad, s, x: m + Math.random()*(W - 2*m), y: -s, vy: (150 + score*7 + Math.random()*40) * Math.max(0.8, H/750), rot:(Math.random()-.5)*.6, vr:(Math.random()-.5)*2});
+}
+function popText(text, color){ texts.push({text, color, x:P.x, y:headTop()-12, life:1.3}); }
+function eat(it){
+  if (it.bad){
+    lives--; lastBad = it.f; P.hurt = 1; popText(pick(it.f.l), '#9e1b2c');
+    if (navigator.vibrate) navigator.vibrate(90);
+    if (lives <= 0) end('over');
+  } else {
+    score++; P.chomp = 1; popText(pick(it.f.l), '#2b1d16');
+    if (score >= TARGET) end('win');
+  }
+  hud();
+}
+
+/* ===== Update & draw ===== */
+function update(dt){
+  t += dt;
+  if (keys.l) P.tx -= 700*dt; if (keys.r) P.tx += 700*dt;
+  P.tx = Math.max(headW/2, Math.min(W - headW/2, P.tx));
+  const px = P.x; P.x += (P.tx - P.x) * Math.min(1, dt*14); P.vx = (P.x - px) / Math.max(dt, 1e-3);
+  if (Math.abs(P.vx) > 25) P.moved = t;
+  P.chomp = Math.max(0, P.chomp - dt*5); P.hurt = Math.max(0, P.hurt - dt*2.2);
+
+  if (state === 'play'){
+    spawnT -= dt;
+    if (spawnT <= 0){ spawn(); spawnT = Math.max(0.45, 0.95 - score*0.018) * (0.8 + Math.random()*0.4); }
+    const top = headTop(), mouth = top + headH*MOUTH;
+    for (const it of items){
+      it.y += it.vy*dt; it.rot += it.vr*dt;
+      if (!it.done && state === 'play' && it.y > top + headH*0.2 && it.y < mouth + headH*0.15 && Math.abs(it.x - P.x) < headW*0.4){ it.done = true; eat(it); }
+    }
+    items = items.filter(i => !i.done && i.y < H + 80);
+  }
+  texts.forEach(x => { x.y -= 45*dt; x.life -= dt; }); texts = texts.filter(x => x.life > 0);
+  rain.forEach(r => { r.y += r.vy*dt; r.rot += r.vr*dt; }); rain = rain.filter(r => r.y < H + 60);
+}
+
+function rr(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+function drawItem(it){
+  ctx.save(); ctx.translate(it.x, it.y);
+  ctx.save(); ctx.rotate(it.rot); ctx.font = `${it.s}px ${EMOJI}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(it.f.e, 0, 0); ctx.restore();
+  const label = it.bad ? '✗ ' + it.f.n : it.f.n;
+  ctx.font = '15px "Patrick Hand", cursive'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const tw = ctx.measureText(label).width + 14, y = it.s*0.55;
+  rr(-tw/2, y, tw, 20, 10); ctx.fillStyle = it.bad ? '#9e1b2c' : '#fffaf0'; ctx.fill();
+  ctx.lineWidth = 1.5; ctx.strokeStyle = '#2b1d16'; ctx.stroke();
+  ctx.fillStyle = it.bad ? '#fff' : '#2b1d16'; ctx.fillText(label, 0, y + 10.5);
+  ctx.restore();
+}
+
+function drawHead(){
+  if (!sprite || !imgDone) return;
+  const g = ground(), idle = t - P.moved > 0.25;
+  let rot, bob = 0;
+  if (idle){ rot = Math.sin(t*5)*0.13; bob = -Math.abs(Math.sin(t*5))*6; }
+  else rot = Math.max(-.25, Math.min(.25, P.vx*0.0007));
+  const sx = 1 + 0.14*P.chomp, sy = 1 - 0.10*P.chomp, shake = Math.sin(t*70)*9*P.hurt;
+  ctx.fillStyle = 'rgba(43,29,22,.18)'; ctx.beginPath(); ctx.ellipse(P.x, g + 4, headW*0.42, 9, 0, 0, Math.PI*2); ctx.fill();
+  ctx.save(); ctx.translate(P.x + shake, g + bob); ctx.rotate(rot); ctx.scale(sx, sy);
+  const sw = sprite.width/dpr, sh = sprite.height/dpr;
+  ctx.drawImage(sprite, -sw/2, -sh + spritePad, sw, sh);
+  ctx.restore();
+  if (P.hurt > 0.3){ ctx.font = `30px ${EMOJI}`; ctx.textAlign = 'center'; ctx.fillText('🤢', P.x + headW*0.5, headTop() + 8); }
+}
+
+function draw(){
+  ctx.clearRect(0, 0, W, H);
+  items.forEach(drawItem);
+  drawHead();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  for (const x of texts){
+    ctx.globalAlpha = Math.min(1, x.life*1.5); ctx.font = 'bold 24px "Patrick Hand", cursive';
+    ctx.lineWidth = 5; ctx.strokeStyle = '#fffaf0'; ctx.strokeText(x.text, x.x, x.y); ctx.fillStyle = x.color; ctx.fillText(x.text, x.x, x.y);
+  }
+  ctx.globalAlpha = 1;
+  for (const r of rain){ ctx.save(); ctx.translate(r.x, r.y); ctx.rotate(r.rot); ctx.font = `${r.s}px ${EMOJI}`; ctx.fillText(r.e, 0, 0); ctx.restore(); }
+}
+
+let last = performance.now();
+function loop(now){ const dt = Math.min(0.033, (now - last)/1000); last = now; update(dt); draw(); requestAnimationFrame(loop); }
+
+/* ===== Controls ===== */
+cvs.addEventListener('pointerdown', e => { P.tx = e.clientX; });
+cvs.addEventListener('pointermove', e => { P.tx = e.clientX; });
+addEventListener('keydown', e => { if (e.key === 'ArrowLeft' || e.key === 'a') keys.l = true; if (e.key === 'ArrowRight' || e.key === 'd') keys.r = true; });
+addEventListener('keyup', e => { if (e.key === 'ArrowLeft' || e.key === 'a') keys.l = false; if (e.key === 'ArrowRight' || e.key === 'd') keys.r = false; });
+addEventListener('resize', resize);
+
+resize(); hud(); img.src = PHOTO; requestAnimationFrame(loop);
+</script>
+</body>
+</html>
