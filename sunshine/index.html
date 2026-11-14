@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For you, Agrim ☀️</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#5a3a2e;--paper:#fffaf0;--edge:#f6b58f;--s:min(52vw,210px);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{font-family:'Fredoka',sans-serif;color:var(--ink);overflow:hidden;
+  background:linear-gradient(180deg,#ffc8b4 0%,#ffd9b8 30%,#ffe7b8 62%,#fff3d1 100%);}
+.hidden{display:none!important;}
+
+/* sky */
+.sky{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
+.cloud{position:absolute;left:0;width:120px;height:40px;background:#fff;border-radius:40px;opacity:.7;animation:drift linear infinite;}
+.cloud::before,.cloud::after{content:'';position:absolute;background:#fff;border-radius:50%;}
+.cloud::before{width:56px;height:56px;top:-28px;left:18px;}
+.cloud::after{width:44px;height:44px;top:-20px;left:58px;}
+@keyframes drift{from{transform:translateX(-170px) scale(var(--k,1))}to{transform:translateX(calc(100vw + 170px)) scale(var(--k,1))}}
+.spark{position:absolute;bottom:-10px;border-radius:50%;background:#fff;opacity:0;box-shadow:0 0 6px #fff;animation:rise linear infinite;}
+@keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-105vh);opacity:0}}
+.hills{position:fixed;left:0;bottom:0;width:100%;height:20vh;pointer-events:none;z-index:0;}
+
+/* layout */
+.wrap{position:relative;z-index:1;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  padding:calc(env(safe-area-inset-top) + 30px) 22px calc(env(safe-area-inset-bottom) + 26px);text-align:center;}
+.hi{font-family:'Gaegu',cursive;font-size:25px;opacity:.85;}
+h1{font-weight:600;font-size:clamp(26px,7vw,34px);margin-top:2px;line-height:1.15;}
+
+/* sun */
+.sunbox{position:relative;width:var(--s);height:var(--s);margin:10px 0;}
+.rays{position:absolute;inset:-34%;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(255,214,102,.45) 0deg 7deg,transparent 7deg 18deg);
+  -webkit-mask:radial-gradient(circle,#000 30%,transparent 70%);mask:radial-gradient(circle,#000 30%,transparent 70%);
+  animation:spin 70s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sun{position:relative;width:100%;height:100%;border:none;border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle at 40% 35%,#fff7cf 0%,#ffe07a 40%,#ffc24a 75%,#ffab3d 100%);
+  box-shadow:0 0 40px 10px rgba(255,200,80,.55),0 0 110px 40px rgba(255,180,90,.3);
+  animation:breathe 4s ease-in-out infinite;}
+.sun.ready{animation-duration:2.2s;}
+.sun.boop{animation:boop .45s ease-out;}
+.sun svg{width:62%;height:62%;}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.045);box-shadow:0 0 55px 16px rgba(255,200,80,.65),0 0 130px 50px rgba(255,180,90,.35);}}
+@keyframes boop{0%{transform:scale(1)}30%{transform:scale(1.12,.9)}60%{transform:scale(.95,1.06)}100%{transform:scale(1)}}
+.hint{position:absolute;left:50%;bottom:-38px;transform:translateX(-50%);font-family:'Gaegu',cursive;font-size:22px;font-weight:700;white-space:nowrap;animation:bounce 1.3s ease-in-out infinite;}
+@keyframes bounce{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-6px)}}
+
+/* moods */
+.bottom{width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center;}
+.moods{width:100%;display:flex;flex-direction:column;gap:10px;}
+.moods.nudge{animation:nudge .4s;}
+@keyframes nudge{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.moods button{font-family:'Fredoka',sans-serif;font-size:18px;font-weight:500;color:var(--ink);background:rgba(255,255,255,.75);
+  border:2px solid var(--edge);border-radius:999px;padding:13px 18px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 0 var(--edge);cursor:pointer;text-align:left;}
+.moods button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--edge);}
+.link{font-family:'Fredoka',sans-serif;font-size:17px;color:var(--ink);background:none;border:none;text-decoration:underline;text-underline-offset:4px;cursor:pointer;padding:10px;}
+.found{font-size:14px;opacity:.65;margin-top:12px;min-height:18px;}
+.mute{position:fixed;top:calc(env(safe-area-inset-top) + 12px);right:14px;z-index:5;background:rgba(255,255,255,.6);border:none;border-radius:999px;width:40px;height:40px;font-size:18px;cursor:pointer;}
+
+/* notes */
+.noteWrap{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;
+  background:rgba(255,236,214,.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);}
+.note{position:relative;width:100%;max-width:340px;background:var(--paper);border-radius:6px;padding:36px 26px 22px;
+  background-image:repeating-linear-gradient(180deg,transparent 0 33px,rgba(240,170,140,.25) 33px 34px);
+  box-shadow:0 14px 30px rgba(140,80,40,.18);transform:rotate(-2deg);animation:floatOut .9s cubic-bezier(.2,.8,.2,1);}
+@keyframes floatOut{0%{transform:translateY(90px) scale(.15) rotate(-14deg);opacity:0}60%{transform:translateY(-12px) scale(1.03) rotate(1deg);opacity:1}100%{transform:translateY(0) scale(1) rotate(-2deg)}}
+.tape{position:absolute;top:-12px;left:50%;width:96px;height:26px;background:rgba(255,201,77,.6);transform:translateX(-50%) rotate(-3deg);}
+.note p{font-family:'Gaegu',cursive;font-size:28px;line-height:1.2;color:#4a2e24;text-align:left;}
+.sig{font-family:'Gaegu',cursive;font-size:22px;font-weight:700;text-align:right;margin-top:14px;color:#c9706a;}
+.letter{max-width:360px;max-height:64vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.letter p{font-size:23px;margin-bottom:12px;}
+.wa{display:block;margin-top:18px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:18px;text-align:center;text-decoration:none;color:#fff;
+  background:#4cbf7c;border-radius:999px;padding:14px 18px;box-shadow:0 4px 0 #2f9a5c;}
+.wa:active{transform:translateY(3px);box-shadow:0 1px 0 #2f9a5c;}
+.noteBtns{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;justify-content:center;}
+.pill{font-family:'Fredoka',sans-serif;font-size:17px;font-weight:500;color:var(--ink);background:#fff;border:2px solid var(--edge);border-radius:999px;padding:11px 20px;box-shadow:0 4px 0 var(--edge);cursor:pointer;}
+.pill.ghost{background:rgba(255,255,255,.5);}
+.pill:active{transform:translateY(3px);box-shadow:0 1px 0 var(--edge);}
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky">
+  <div class="cloud" style="top:12%;animation-duration:70s;animation-delay:-20s;--k:1"></div>
+  <div class="cloud" style="top:24%;animation-duration:95s;animation-delay:-60s;--k:.7"></div>
+  <div class="cloud" style="top:6%;animation-duration:120s;animation-delay:-5s;--k:.55"></div>
+</div>
+<svg class="hills" viewBox="0 0 400 120" preserveAspectRatio="none">
+  <path d="M0 70 Q80 30 160 60 T320 50 T400 58 V120 H0Z" fill="#ffc9a8" opacity=".7"/>
+  <path d="M0 92 Q100 62 200 86 T400 80 V120 H0Z" fill="#ffb592" opacity=".75"/>
+</svg>
+
+<button class="mute" id="mute" aria-label="sound">🔔</button>
+
+<main class="wrap">
+  <header>
+    <p class="hi">hey agrim ☀️</p>
+    <h1 id="prompt">how's today feeling?</h1>
+  </header>
+
+  <div class="sunbox">
+    <div class="rays"></div>
+    <button class="sun" id="sun" aria-label="tap the sun">
+      <svg viewBox="0 0 100 100">
+        <circle cx="29" cy="58" r="6" fill="#ff9a8a" opacity=".55"/>
+        <circle cx="71" cy="58" r="6" fill="#ff9a8a" opacity=".55"/>
+        <path d="M30 46 q6 -6 12 0" stroke="#7a4a2a" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <path d="M58 46 q6 -6 12 0" stroke="#7a4a2a" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <path d="M41 59 q9 9 18 0" stroke="#7a4a2a" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="hint hidden" id="hint">tap me ☝️</div>
+  </div>
+
+  <div class="bottom">
+    <section class="moods" id="moods">
+      <button data-m="good">☀️ <span>actually, a really good day!</span></button>
+      <button data-m="meh">🌤️ <span>a little meh</span></button>
+      <button data-m="bad">🌥️ <span>pretty bad</span></button>
+      <button data-m="worst">⛈️ <span>the worst day</span></button>
+    </section>
+    <button class="link hidden" id="change">← change mood</button>
+    <p class="found" id="found"></p>
+  </div>
+</main>
+
+<!-- note -->
+<div class="noteWrap hidden" id="noteWrap">
+  <div class="note" id="note"><div class="tape"></div><p id="noteText"></p><div class="sig">— Vanshita</div></div>
+  <div class="noteBtns">
+    <button class="pill" id="another">another one ☀️</button>
+    <button class="pill ghost" id="noteMood">change mood</button>
+  </div>
+</div>
+
+<!-- worst day letter -->
+<div class="noteWrap hidden" id="letterWrap">
+  <div class="note letter" id="letter"><div class="tape"></div>
+    <p>Hey you,</p>
+    <p>If you're reading this, today has been really, really hard, and I'm so sorry. I wish I were there right now to just sit next to you, say nothing, and hold your hand.</p>
+    <p>You've held me through so much: my attitude, my panicking, my worst moods. You stayed through all of it like there was never another option. So today, let me be that for you.</p>
+    <p>You don't have to explain anything. You don't have to be okay. You just have to get through tonight, and I'll be right here when you wake up.</p>
+    <p>Whatever this is, it's not bigger than you. And it's definitely not bigger than us.</p>
+    <p>Press the button below. Call me, text me, or just send a heart so I know.</p>
+    <p>Always yours,<br>Vanshita</p>
+    <a class="wa" id="wa" target="_blank" rel="noopener">talk to vanshita 💛</a>
+  </div>
+  <div class="noteBtns"><button class="pill ghost" id="letterClose">close</button></div>
+</div>
+
+<script>
+/* ===================== EDIT HERE ===================== */
+const WHATSAPP_NUMBER = '919667141454';
+const WHATSAPP_TEXT = 'Hey, I pressed the worst day button 🌧️ can we talk?';
+
+// To add a note: copy any line, change the words, keep the quotes and the comma.
+const NOTES = {
+  good: [
+    "Look at you having a good day. I'm so proud of you. Now tell me everything.",
+    "Good days look so good on you. Go celebrate with a brownie, doctor's orders. 🍫",
+    "Happy Agrim is my favourite Agrim. (Okay, every Agrim is my favourite Agrim.)",
+    "Whatever went right today, you deserved it. Now call me and brag.",
+    "Golden retriever mode: fully activated. ☀️",
+    "Aaj toh party banti hai. Sourdough pizza, my treat?",
+    "You worked so hard for days like this. Remember this feeling the next time things get tough.",
+    "Somewhere, a McVeggie is waiting to celebrate with you. 🍔",
+    "Mr. Big Boy Job is thriving, and I'm so proud. 💼",
+    "I hope you're smiling that smile right now, the one where your eyes go small.",
+    "Save some of this good energy for me. I'll collect it later. 😌",
+  ],
+  meh: [
+    "Meh days are just regular days that forgot to eat. Go get a snack.",
+    "Prescription: one chocolate milkshake, extra thick. Repeat as needed. 🥤",
+    "Remember, you once survived dalia. You can survive today. 🥣",
+    "Chal, uth, paani pi. Then come back and tap again.",
+    "Even golden retrievers have off days. They still get treats. You still get me.",
+    "If today were nachos, it'd be the one chip with a jalapeño. Flick it off and keep going.",
+    "Thoda sa meh is allowed. Thoda sa.",
+    "Have you eaten? This is not a joke. This is a real question.",
+    "Sending you one (1) virtual forehead kiss. Redeemable in person for ten.",
+    "Remember the face masks in Chennai? You've looked sillier and been happier. Today's just a phase.",
+    "Your hair still looks great, if that helps. It should help.",
+    "Tension mat le. Main hoon na.",
+    "Deep breaths. Then one McVeggie. In that order, or not.",
+    "You're allowed to be a little grumpy. Not too much though, that's my job.",
+    "Bad moods are temporary. Your jawline is permanent.",
+  ],
+  bad: [
+    "Hey. I know today's heavy. You don't have to fix it right now. Just get through it, and let me help carry it.",
+    "You've sat with me through so many of my bad days. Let me sit with you through this one.",
+    "You're the calmest person I know, but you don't always have to be. It's okay to not be okay today.",
+    "Whatever happened, it doesn't change who you are: patient, kind, gentle and so loved.",
+    "Sab theek ho jayega. Maybe not today, but it will. I'll be right here till then.",
+    "You've survived every bad day so far. That's a 100% record.",
+    "Remember the guy who started his first big boy job nervous and did it anyway? He's still you.",
+    "You never complain, so if today got to you, it must be a lot. It's okay to feel it.",
+    "Close your eyes and think of the grad trip sunset. That's waiting for us again.",
+    "Be as gentle with yourself as you are with me. You deserve the same patience you give everyone.",
+    "I wish I could hug you right now. Consider this note a placeholder hug until I can.",
+    "Tough days don't last. Tough Agrims do.",
+    "It's okay to rest. Even people who aim for the moon need sleep. 🌙",
+    "You don't have to be strong for anyone today. Not even for me.",
+    "Eat something warm, take a shower, go to bed early. Tomorrow-Agrim will thank you.",
+    "Whatever's going on, you're not alone in it. Not for a second.",
+    "Tu bahut strong hai, but you're allowed to lean. Lean on me.",
+    "Even on the days you don't feel lucky to be you, I feel so lucky to have you.",
+  ],
+};
+
+const PROMPTS = {
+  good: "yay!! tap the sun ☀️",
+  meh: "tap the sun. it gets it.",
+  bad: "come here. tap the sun.",
+  worst: "i'm here. tap the sun.",
+};
+/* ===================================================== */
+
+const $ = id => document.getElementById(id);
+const sun = $('sun'), hint = $('hint'), moodsEl = $('moods'), changeBtn = $('change'), promptEl = $('prompt'), foundEl = $('found');
+const noteWrap = $('noteWrap'), noteEl = $('note'), noteText = $('noteText'), letterWrap = $('letterWrap'), letterEl = $('letter');
+$('wa').href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(WHATSAPP_TEXT);
+let mood = null;
+
+/* storage (remembers which notes he's seen, per phone) */
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+function nextNote(m){
+  const list = NOTES[m];
+  let seen = store.get('sun-seen-' + m, []).filter(t => list.includes(t));
+  let pool = list.filter(t => !seen.includes(t));
+  if (!pool.length){ const last = seen[seen.length - 1]; seen = []; pool = list.filter(t => t !== last); if (!pool.length) pool = list.slice(); }
+  const note = pool[Math.floor(Math.random() * pool.length)];
+  seen.push(note); store.set('sun-seen-' + m, seen);
+  const found = store.get('sun-found', []); if (!found.includes(note)){ found.push(note); store.set('sun-found', found); }
+  updateFound();
+  return note;
+}
+function updateFound(){
+  const all = [...NOTES.good, ...NOTES.meh, ...NOTES.bad];
+  const n = store.get('sun-found', []).filter(t => all.includes(t)).length;
+  foundEl.textContent = n ? `☀️ ${n} of ${all.length} notes found` : '';
+}
+
+/* sound: soft chimes, made in code */
+let AC = null, muted = store.get('sun-muted', false);
+$('mute').textContent = muted ? '🔕' : '🔔';
+function initAudio(){
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
+  if (!AC){ const C = window.AudioContext || window.webkitAudioContext; if (C) AC = new C(); }
+  if (AC && AC.state === 'suspended') AC.resume();
+}
+function bell(f, when, vol){
+  if (!AC || muted) return;
+  const t0 = AC.currentTime + when;
+  [[1, vol], [2.01, vol*0.25]].forEach(([mult, v]) => {
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = 'sine'; o.frequency.value = f*mult;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(v, t0 + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.6);
+    o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0 + 1.7);
+  });
+}
+const chime = () => [1047, 1319, 1568].forEach((f, i) => bell(f, i*0.09, 0.05));
+const pop = () => bell(784, 0, 0.045);
+$('mute').onclick = () => { muted = !muted; store.set('sun-muted', muted); $('mute').textContent = muted ? '🔕' : '🔔'; if (!muted){ initAudio(); pop(); } };
+
+/* flow */
+function replay(el){ el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }
+function pickMood(m){
+  mood = m; pop();
+  promptEl.textContent = PROMPTS[m];
+  moodsEl.classList.add('hidden'); changeBtn.classList.remove('hidden');
+  sun.classList.add('ready'); hint.classList.remove('hidden');
+}
+function toMoods(){
+  mood = null;
+  promptEl.textContent = "how's today feeling?";
+  moodsEl.classList.remove('hidden'); changeBtn.classList.add('hidden');
+  sun.classList.remove('ready'); hint.classList.add('hidden');
+}
+function closeAll(toMood){
+  noteWrap.classList.add('hidden'); letterWrap.classList.add('hidden');
+  if (toMood) toMoods(); else hint.classList.remove('hidden');
+}
+
+document.querySelectorAll('#moods button').forEach(b => b.addEventListener('click', () => { initAudio(); pickMood(b.dataset.m); }));
+changeBtn.onclick = toMoods;
+
+sun.addEventListener('click', () => {
+  initAudio();
+  sun.classList.remove('boop'); void sun.offsetWidth; sun.classList.add('boop');
+  if (!mood){ moodsEl.classList.remove('nudge'); void moodsEl.offsetWidth; moodsEl.classList.add('nudge'); pop(); return; }
+  chime(); hint.classList.add('hidden');
+  setTimeout(() => {
+    if (mood === 'worst'){ letterWrap.classList.remove('hidden'); letterEl.scrollTop = 0; replay(letterEl); }
+    else { noteText.textContent = nextNote(mood); noteWrap.classList.remove('hidden'); replay(noteEl); }
+  }, 220);
+});
+sun.addEventListener('animationend', e => { if (e.animationName === 'boop') sun.classList.remove('boop'); });
+
+$('another').onclick = () => { chime(); noteText.textContent = nextNote(mood); replay(noteEl); };
+$('noteMood').onclick = () => closeAll(true);
+$('letterClose').onclick = () => closeAll(false);
+
+/* sparkles */
+for (let i = 0; i < 16; i++){
+  const s = document.createElement('div'); s.className = 'spark';
+  const size = 2 + Math.random()*4;
+  s.style.cssText = `left:${Math.random()*100}%;width:${size}px;height:${size}px;animation-duration:${7 + Math.random()*7}s;animation-delay:${-Math.random()*14}s;`;
+  $('sky').appendChild(s);
+}
+updateFound();
+</script>
+</body>
+</html>
