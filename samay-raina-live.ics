@@ -1,0 +1,18 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Birthday Starter Pack//EN
+BEGIN:VEVENT
+UID:samay-raina-live-agrim-2027@starterpack
+DTSTAMP:20261114T000000Z
+DTSTART:20270327T093000Z
+DTEND:20270327T113000Z
+SUMMARY:Samay Raina Live with Vanshita
+LOCATION:IG Stadium\, New Delhi
+DESCRIPTION:Gold tickets. Free seating\, so we're leaving early!
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Samay Raina Live is tomorrow!
+END:VALARM
+END:VEVENT
+END:VCALENDAR
