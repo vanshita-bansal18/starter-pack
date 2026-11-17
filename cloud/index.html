@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>24 Birthday Coupons ♡ Agrim</title>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@500;700&family=Patrick+Hand&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#f6f0e4;--grid:#ddd5c6;--wine:#7a1414;--rose:#d94f70;--ink:#2b2220;--kraft:rgba(205,170,115,.85)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Patrick Hand',cursive;color:var(--ink);background-color:var(--cream);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:26px 26px;min-height:100vh;overflow-x:hidden}
+.gingham{height:30px;background-color:#efe2cf;
+  background-image:linear-gradient(90deg,rgba(130,20,25,.55) 50%,transparent 50%),linear-gradient(rgba(130,20,25,.55) 50%,transparent 50%);
+  background-size:22px 22px}
+.squiggle{position:fixed;pointer-events:none;z-index:0;width:190px;opacity:.9}
+.sq1{top:20px;right:-40px}.sq2{bottom:10px;left:-50px;transform:rotate(180deg)}
+main{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:22px 16px 40px}
+.kicker{font-family:'Caveat',cursive;font-size:1.5rem;text-align:center;color:var(--wine);transform:rotate(-2deg)}
+.ransom{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin:10px 0 6px}
+.rl{display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:54px;padding:0 7px;font-size:2.3rem;line-height:1;box-shadow:2px 3px 0 rgba(0,0,0,.18)}
+.gap{flex-basis:100%;height:4px}
+.sub{text-align:center;font-size:1.15rem;opacity:.8;margin-bottom:18px}
+
+.sky{position:relative;margin:10px auto 6px;max-width:440px;padding:26px 16px 0;border-radius:6px;
+  background:radial-gradient(circle at 25% 30%,rgba(255,255,255,.55),transparent 40%),radial-gradient(circle at 80% 60%,rgba(255,255,255,.4),transparent 45%),linear-gradient(#8cc4ea,#c9e5f6 65%,#eef7fc);
+  box-shadow:3px 5px 0 rgba(43,34,32,.15);transform:rotate(-1deg);overflow:hidden}
+.tape{position:absolute;width:90px;height:26px;background:var(--kraft);z-index:3}
+.sky .t1{top:-6px;left:-18px;transform:rotate(-28deg)}
+.sky .t2{top:-6px;right:-18px;transform:rotate(28deg)}
+#cloud{display:block;width:100%;max-width:330px;margin:0 auto;cursor:pointer;filter:drop-shadow(0 5px 0 rgba(120,160,195,.55));animation:bob 3.2s ease-in-out infinite}
+#cloud circle,#cloud rect{fill:#fff}
+#cloud.shake{animation:shake .6s}
+@keyframes bob{50%{transform:translateY(-8px)}}
+@keyframes shake{20%{transform:translateX(-8px) rotate(-3deg)}40%{transform:translateX(8px) rotate(3deg)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.heartfloat{animation:hf 2.4s ease-in-out infinite;transform-origin:center}
+@keyframes hf{50%{transform:translateY(-6px) scale(1.15)}}
+.flowers{font-size:30px;letter-spacing:-6px;text-align:center;white-space:nowrap;margin-top:4px;line-height:1}
+.hint{font-family:'Caveat',cursive;font-size:1.7rem;text-align:center;color:var(--wine);margin:10px 0 4px;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45}}
+
+.drop{position:fixed;z-index:50;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.drop.tix{width:38px;height:24px;border-radius:3px;font-size:12px;color:#b3122e;outline:1.5px dashed rgba(0,0,0,.25);outline-offset:-4px;box-shadow:1px 2px 0 rgba(0,0,0,.15)}
+.drop.heart{font-size:20px;color:#d94f70}
+
+.wallet{display:none;margin-top:26px}.wallet.show{display:block}
+.wallet-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+.wallet-head h2{font-family:'Playfair Display',serif;font-weight:900;font-size:1.6rem}
+.wallet-head h2 span{font-family:'Caveat',cursive;font-weight:700;color:var(--rose);font-size:1.9rem}
+.count{background:#fff;padding:4px 12px;border:2px solid var(--ink);border-radius:20px;font-size:1.05rem;box-shadow:2px 2px 0 var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 16px}
+@media(min-width:560px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:740px){.grid{grid-template-columns:repeat(4,1fr)}}
+.cwrap{position:relative;border:none;background:none;font:inherit;color:inherit;cursor:pointer;transform:rotate(var(--r));filter:drop-shadow(2px 4px 0 rgba(43,34,32,.14));transition:transform .15s}
+.cwrap:active{transform:rotate(var(--r)) scale(.95)}
+.wallet.show .cwrap{animation:pop .55s backwards;animation-delay:calc(var(--i) * 45ms)}
+@keyframes pop{from{opacity:0;transform:translateY(-60px) rotate(calc(var(--r) + 25deg)) scale(.6)}}
+.cwrap .tape{width:54px;height:18px;top:-8px;left:50%;margin-left:-27px;transform:rotate(-4deg)}
+.coupon{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:150px;padding:20px 16px 14px;text-align:center;
+  outline:2px dashed rgba(43,34,32,.28);outline-offset:-8px;
+  -webkit-mask:radial-gradient(circle 10px at 0 50%,#0000 98%,#000) left/50.5% 100% no-repeat,radial-gradient(circle 10px at 100% 50%,#0000 98%,#000) right/50.5% 100% no-repeat;
+  mask:radial-gradient(circle 10px at 0 50%,#0000 98%,#000) left/50.5% 100% no-repeat,radial-gradient(circle 10px at 100% 50%,#0000 98%,#000) right/50.5% 100% no-repeat}
+.p0{background:#f8cfd9}.p1{background:#fbe7a6}.p2{background:#d6ebcb}.p3{background:#cfe6f6}.p4{background:#ead2a8}.p5{background:#fffaf0}
+.no{font-family:'Abril Fatface',serif;font-size:.8rem;letter-spacing:1px;color:var(--wine)}
+.emo{font-size:2rem;line-height:1.1}
+.ttl{font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;line-height:1.15}
+.used .coupon{filter:grayscale(.7);opacity:.7}
+.stamp{display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-16deg);border:3px solid #b3122e;color:#b3122e;font-family:'Abril Fatface',serif;font-size:1rem;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;background:rgba(255,250,240,.6);z-index:4}
+.used .stamp{display:block}
+
+.btn{display:inline-block;border:2px solid var(--ink);background:var(--wine);color:#fff4ea;font-family:'Abril Fatface',serif;font-size:1.05rem;letter-spacing:.5px;padding:10px 20px;border-radius:30px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;text-decoration:none;transition:transform .1s}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.ghost{background:#fff;color:var(--ink)}
+.btn.pink{background:#f3b6c6;color:var(--wine)}
+
+.modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:20px;
+  background-color:rgba(60,10,10,.35);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.modal.open{display:flex}
+.sheet{position:relative;width:100%;max-width:380px;background:#f4efe3;padding:34px 22px 40px;text-align:center;
+  clip-path:polygon(0 2%,8% 0,20% 1.5%,35% 0,50% 1.2%,65% 0,80% 1.5%,92% 0,100% 1.5%,100% 96%,93% 99%,84% 96.5%,72% 100%,60% 97%,47% 99.5%,35% 96.5%,22% 100%,10% 97%,0 99%);
+  animation:sheetIn .35s cubic-bezier(.2,1.4,.5,1)}
+@keyframes sheetIn{from{transform:scale(.7) rotate(-6deg);opacity:0}}
+.sheet .x{position:absolute;top:14px;right:14px;border:none;background:none;font-size:1.8rem;cursor:pointer;color:var(--ink)}
+.m-no{font-family:'Abril Fatface',serif;color:var(--wine);letter-spacing:2px}
+.m-emo{font-size:3.4rem;margin:6px 0}
+.m-ttl{font-family:'Playfair Display',serif;font-weight:900;font-size:1.6rem;line-height:1.15;margin-bottom:10px}
+.m-desc{font-size:1.25rem;line-height:1.35;margin-bottom:12px}
+.fine{font-family:'Caveat',cursive;font-size:1.15rem;opacity:.7;margin-bottom:18px}
+.actions{display:flex;flex-direction:column;align-items:center;gap:12px}
+.ask{font-family:'Caveat',cursive;font-size:1.5rem;color:var(--wine)}
+.done-date{font-family:'Caveat',cursive;font-size:1.4rem;color:#b3122e}
+
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120px);background:var(--ink);color:#fff4ea;padding:10px 18px;border-radius:24px;font-size:1.1rem;z-index:70;transition:transform .3s;max-width:90vw;text-align:center}
+#toast.show{transform:translate(-50%,0)}
+footer{text-align:center;font-family:'Caveat',cursive;font-size:1.35rem;padding:26px 10px 14px;color:var(--wine)}
+</style>
+</head>
+<body>
+<div class="gingham"></div>
+
+<svg class="squiggle sq1" viewBox="0 0 200 260" fill="none"><path d="M10 10 C120 0 190 40 150 90 C110 140 40 110 70 160 C100 210 190 190 180 250" stroke="#8b1a1a" stroke-width="4" stroke-linecap="round"/><path d="M25 18 C130 12 200 55 160 100 C120 150 55 120 85 168 C112 212 196 205 192 255" stroke="#f3b6c6" stroke-width="4" stroke-linecap="round"/></svg>
+<svg class="squiggle sq2" viewBox="0 0 200 260" fill="none"><path d="M10 10 C120 0 190 40 150 90 C110 140 40 110 70 160 C100 210 190 190 180 250" stroke="#8b1a1a" stroke-width="4" stroke-linecap="round"/><path d="M25 18 C130 12 200 55 160 100 C120 150 55 120 85 168 C112 212 196 205 192 255" stroke="#f3b6c6" stroke-width="4" stroke-linecap="round"/></svg>
+
+<main>
+  <p class="kicker">the birthday edition presents…</p>
+  <div class="ransom" id="title"></div>
+  <p class="sub">24 coupons for your 24th. redeemable forever, no expiry date ♡</p>
+
+  <div class="sky">
+    <span class="tape t1"></span><span class="tape t2"></span>
+    <svg id="cloud" viewBox="0 0 300 170" role="button" aria-label="Tap the cloud">
+      <g transform="translate(206 52)"><path class="heartfloat" d="M0 4 C0 -1 6 -2 7 3 C8 -2 14 -1 14 4 C14 9 7 12 7 15 C7 12 0 9 0 4Z" fill="#d94f70"/></g>
+      <circle cx="95" cy="98" r="42"/><circle cx="145" cy="72" r="55"/><circle cx="200" cy="98" r="40"/><rect x="70" y="96" width="150" height="44" rx="22"/>
+      <circle cx="232" cy="132" r="20"/><circle cx="256" cy="124" r="22"/><circle cx="278" cy="136" r="15"/><rect x="220" y="132" width="68" height="20" rx="10"/>
+      <ellipse cx="130" cy="104" rx="4" ry="5" fill="#2b2220"/><ellipse cx="160" cy="104" rx="4" ry="5" fill="#2b2220"/>
+      <path d="M137 114 Q145 122 153 114" stroke="#2b2220" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="120" cy="115" r="7" fill="#f3b6c6" opacity=".7"/><circle cx="170" cy="115" r="7" fill="#f3b6c6" opacity=".7"/>
+      <circle cx="250" cy="133" r="2.5" fill="#2b2220"/><circle cx="263" cy="133" r="2.5" fill="#2b2220"/>
+      <path d="M252 139 Q256.5 143 261 139" stroke="#2b2220" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="245" cy="139" r="4" fill="#f3b6c6" opacity=".7"/><circle cx="268" cy="139" r="4" fill="#f3b6c6" opacity=".7"/>
+    </svg>
+    <div class="flowers">🌻🌻🌻🌻🌻🌻🌻🌻🌻🌻🌻🌻</div>
+  </div>
+  <p class="hint" id="hint">tap the cloud to make it rain ☁️</p>
+
+  <section class="wallet" id="wallet">
+    <div class="wallet-head">
+      <h2>your wallet <span>♡</span></h2>
+      <span class="count" id="count"></span>
+    </div>
+    <p style="text-align:center;margin-bottom:20px"><button class="btn pink" id="pick">can't decide? let the cloud pick ☁️</button></p>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <footer>issued with love by the editor ♡ vanshita</footer>
+</main>
+<div class="gingham"></div>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <button class="x" id="close" aria-label="Close">×</button>
+    <div class="m-no" id="mNo"></div>
+    <div class="m-emo" id="mEmo"></div>
+    <h3 class="m-ttl" id="mTtl"></h3>
+    <p class="m-desc" id="mDesc"></p>
+    <p class="fine">valid forever · non-transferable · no take-backs</p>
+    <div class="actions" id="actions"></div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+const PHONE = "919667141454";
+
+const coupons = [
+  {e:"🎤",t:"Serenade on Call",d:"I'll sing your favourite song to you on call. Off-key, full commitment, and you're not allowed to laugh."},
+  {e:"🍟",t:"McD On Me",d:"Your favourite McDonald's order, delivered to you wherever you are."},
+  {e:"🍱",t:"Surprise Lunch Drop",d:"A surprise lunch delivered to your doorstep on a workday. Work-from-home lunch, upgraded."},
+  {e:"🏆",t:"You Win This Argument",d:"Use it mid-fight. I'll say \"you're right\" and actually mean it."},
+  {e:"😇",t:"Attitude-Free Day",d:"24 whole hours of zero attitude from me. Yes, it's possible. Probably."},
+  {e:"🎬",t:"Movie Night on Call",d:"Your pick, synced on call. No complaining, no falling asleep halfway."},
+  {e:"🚗",t:"A Whole Day Out",d:"One full day together, from breakfast to the drive home. You pick where we go, I'm all yours till the day ends."},
+  {e:"🎧",t:"A Playlist Just For You",d:"Songs I picked because every one of them is you."},
+  {e:"🎙️",t:"Good Morning Voice Notes",d:"A voice note from me every morning for a whole week."},
+  {e:"✨",t:"10 Compliments on Demand",d:"For when you need an ego boost. All sincere, all true."},
+  {e:"🙋‍♀️",t:"Yes Day",d:"I say yes to everything you ask for one day (within reason, and within parent-friendly hours 😌)."},
+  {e:"🗣️",t:"Rant Pass",d:"Unlimited ranting. No advice, no \"but have you tried\". I just listen and agree."},
+  {e:"🎮",t:"Game Night",d:"The game that started it all, or anything you pick. I won't rage quit. Promise."},
+  {e:"📸",t:"Photo Dump",d:"10 new cute pictures of me, sent to you instantly."},
+  {e:"💪",t:"Gym Hype Woman",d:"Send a mirror selfie, receive a full paragraph of hype. Unlimited for a week."},
+  {e:"🗺️",t:"Date Planned By Me",d:"Next date fully planned by me. You just show up looking painfully handsome."},
+  {e:"💸",t:"Bill's On Me",d:"The next date's bill is mine. Dessert included, obviously."},
+  {e:"👕",t:"Outfit Pick",d:"You choose what I wear on our next date. No vetoes allowed."},
+  {e:"🤗",t:"The Longest Hug",d:"Next time we meet, the hug only ends when you say so."},
+  {e:"📵",t:"Phones-Away Date",d:"One whole meet-up with phones in the bag. All my attention, only on you."},
+  {e:"🛍️",t:"Shopping Buddy",d:"I'll shop with you on video call and give brutally honest opinions."},
+  {e:"🎁",t:"Surprise Parcel",d:"A mystery parcel delivered to your doorstep. You're not allowed to ask what."},
+  {e:"🃏",t:"Get Out of Trouble Free",d:"Whatever you did, it's forgiven. Instantly. No lecture attached."},
+  {e:"🌟",t:"One Wish",d:"Anything you want. Literally anything. Choose wisely, birthday boy."}
+];
+
+const KEY = "agrim_love_coupons_v1";
+let state = {redeemed:{}, rained:false};
+try { const s = JSON.parse(localStorage.getItem(KEY)); if (s) state = Object.assign(state, s); } catch(e){}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,"0");
+const wa = text => `https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`;
+
+/* ransom-note title */
+(function(){
+  const pairs=[["#1f5c4a","#f6c9d4"],["#7a3b2e","#f6e7c8"],["#6b86b8","#fff"],["#f3b6c6","#8b1a1a"],["#f7d35c","#c2185b"],["#9bc77a","#c2185b"],["#4a1010","#f3b6c6"],["#f0a35e","#5a1a2a"],["#efe6cf","#2b2220"],["#c6418a","#fff4c2"],["#8fd0f0","#5b21b6"]];
+  const fonts=["'Abril Fatface',serif","'Playfair Display',serif","Georgia,serif","'Abril Fatface',serif","'Patrick Hand',cursive"];
+  const el=$("title");
+  [..."love coupons"].forEach((ch,i)=>{
+    if(ch===" "){const g=document.createElement("span");g.className="gap";el.append(g);return;}
+    const s=document.createElement("span"), p=pairs[(i*7)%pairs.length];
+    s.className="rl"; s.textContent=ch;
+    s.style.background=p[0]; s.style.color=p[1];
+    s.style.fontFamily=fonts[i%fonts.length];
+    s.style.fontStyle=i%3===1?"italic":"normal";
+    s.style.transform=`rotate(${((i*37)%13)-6}deg) translateY(${((i*11)%7)-3}px)`;
+    const a=(i*13)%9,b=(i*7)%8,c=(i*5)%9,d=(i*3)%8;
+    s.style.clipPath=`polygon(${a}% 0,100% ${b}%,${100-c}% 100%,0 ${100-d}%)`;
+    el.append(s);
+  });
+})();
+
+/* coupons */
+function render(){
+  const grid=$("grid"); grid.innerHTML="";
+  coupons.forEach((c,i)=>{
+    const b=document.createElement("button");
+    b.className="cwrap"+(state.redeemed[i]?" used":"");
+    b.style.setProperty("--r",(((i*53)%7)-3)+"deg");
+    b.style.setProperty("--i",i);
+    b.innerHTML=`<span class="tape"></span><span class="coupon p${i%6}"><span class="no">No. ${pad(i+1)}</span><span class="emo">${c.e}</span><span class="ttl">${c.t}</span></span><span class="stamp">redeemed</span>`;
+    b.onclick=()=>openCoupon(i);
+    grid.append(b);
+  });
+  const left=coupons.length-Object.keys(state.redeemed).length;
+  $("count").textContent=`${left} of ${coupons.length} left`;
+}
+
+/* modal */
+let current=null;
+function openCoupon(i){
+  current=i; const c=coupons[i];
+  $("mNo").textContent=`COUPON No. ${pad(i+1)}`;
+  $("mEmo").textContent=c.e; $("mTtl").textContent=c.t; $("mDesc").textContent=c.d;
+  showActions(state.redeemed[i]?"used":"fresh");
+  $("modal").classList.add("open");
+}
+function closeModal(){ $("modal").classList.remove("open"); current=null; }
+function showActions(mode){
+  const i=current, c=coupons[i], box=$("actions"); box.innerHTML="";
+  if(mode==="fresh"){
+    box.append(btn("Redeem","btn",()=>showActions("confirm")));
+    box.append(btn("save it for later","btn ghost",closeModal));
+  } else if(mode==="confirm"){
+    const p=document.createElement("p"); p.className="ask"; p.textContent="Are you sure? Once it's redeemed, it's all used up."; box.append(p);
+    const a=document.createElement("a"); a.className="btn"; a.target="_blank"; a.rel="noopener";
+    a.textContent="Yes, redeem it";
+    a.href=wa(`Hi love, I'd like to redeem Love Coupon No. ${pad(i+1)}: "${c.t}". Can't wait for it.`);
+    a.onclick=()=>{
+      state.redeemed[i]=new Date().toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
+      save(); render(); toast("Coupon redeemed. Consider it delivered with love.");
+      setTimeout(()=>{ if(current===i) showActions("used"); },400);
+    };
+    box.append(a);
+    box.append(btn("wait, not yet","btn ghost",()=>showActions("fresh")));
+  } else {
+    const p=document.createElement("p"); p.className="done-date"; p.textContent=`redeemed on ${state.redeemed[i]}`; box.append(p);
+    const a=document.createElement("a"); a.className="btn pink"; a.target="_blank"; a.rel="noopener";
+    a.textContent="Remind her on WhatsApp";
+    a.href=wa(`Hi love, just a gentle reminder that Love Coupon No. ${pad(i+1)} ("${c.t}") is still waiting for me. A promise is a promise.`);
+    box.append(a);
+    box.append(btn("close","btn ghost",closeModal));
+  }
+}
+function btn(label,cls,fn){ const b=document.createElement("button"); b.className=cls; b.textContent=label; b.onclick=fn; return b; }
+$("close").onclick=closeModal;
+$("modal").onclick=e=>{ if(e.target.id==="modal") closeModal(); };
+
+/* toast */
+let tt; function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("show"),2600); }
+
+/* rain */
+function rain(){
+  const cloud=$("cloud"), r=cloud.getBoundingClientRect();
+  cloud.classList.remove("shake"); void cloud.offsetWidth; cloud.classList.add("shake");
+  const cols=["#f8cfd9","#fbe7a6","#d6ebcb","#cfe6f6","#ead2a8","#fffaf0"];
+  for(let i=0;i<36;i++){
+    const d=document.createElement("div"), heart=i>=24;
+    d.className="drop "+(heart?"heart":"tix"); d.textContent="♥";
+    if(!heart) d.style.background=cols[i%cols.length];
+    d.style.left=(r.left+r.width*(.15+Math.random()*.7))+"px";
+    d.style.top=(r.top+r.height*.6)+"px";
+    document.body.append(d);
+    const dist=window.innerHeight-r.top+80;
+    const anim=d.animate([
+      {transform:"translate(0,0) rotate(0deg)",opacity:0},
+      {opacity:1,offset:.1},
+      {transform:`translate(${(Math.random()-.5)*180}px,${dist}px) rotate(${(Math.random()-.5)*540}deg)`,opacity:1}
+    ],{duration:1400+Math.random()*1100,delay:i*55,easing:"cubic-bezier(.45,.05,.8,.6)",fill:"backwards"});
+    anim.onfinish=()=>d.remove();
+  }
+  const first=!state.rained;
+  state.rained=true; save();
+  setTimeout(()=>{
+    $("wallet").classList.add("show");
+    $("hint").textContent="tap again for more rain ☁️";
+    if(first) $("wallet").scrollIntoView({behavior:"smooth",block:"start"});
+  },1300);
+}
+$("cloud").onclick=rain;
+
+/* let the cloud pick */
+$("pick").onclick=()=>{
+  const open=coupons.map((_,i)=>i).filter(i=>!state.redeemed[i]);
+  if(!open.length){ toast("All 24 redeemed. Time for a new edition."); return; }
+  openCoupon(open[Math.floor(Math.random()*open.length)]);
+};
+
+if(state.rained){ $("wallet").classList.add("show"); $("hint").textContent="tap again for more rain ☁️"; }
+render();
+</script>
+</body>
+</html>
