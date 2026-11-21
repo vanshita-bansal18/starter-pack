@@ -328,7 +328,7 @@ class Fly{
     else if(side===1){this.x=W+90;this.y=rand(H*.15,H*.6);}
     else{this.x=rand(W*.15,W*.85);this.y=-90;}
     this.a=Math.atan2(H*.42-this.y,W/2-this.x)+rand(-.4,.4); this.rot=this.a+Math.PI/2;
-    this.v=rand(40,56); this.s=this.sc=baseScale()*rand(.86,1);
+    this.v=rand(55,72); this.s=this.sc=baseScale()*rand(.86,1);
     this.ph=[rand(0,7),rand(0,7),rand(0,7)]; this.state="wander"; this.dustT=rand(0,.2);
     if(catchable) el.addEventListener("pointerdown",e=>{e.preventDefault();catchFly(this);});
     flies.push(this);
