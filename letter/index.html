@@ -232,4 +232,196 @@
         <text x="200" y="61" text-anchor="middle" font-family="'Permanent Marker', cursive" font-size="26" fill="#2a2522">for Agrim</text>
       </g>
 
-      
+      <path d="M108 252 L126 190 L274 190 L292 252 Z" fill="#2d2b29" stroke="#000000" stroke-opacity=".5"/>
+      <circle cx="148" cy="226" r="6" fill="#0f0e0d"/>
+      <circle cx="252" cy="226" r="6" fill="#0f0e0d"/>
+      <rect x="120" y="228" width="9" height="9" fill="#0f0e0d"/>
+      <rect x="271" y="228" width="9" height="9" fill="#0f0e0d"/>
+      <rect x="134" y="242" width="16" height="10" fill="#0f0e0d"/>
+      <rect x="250" y="242" width="16" height="10" fill="#0f0e0d"/>
+      <rect x="180" y="238" width="40" height="14" fill="#0f0e0d"/>
+      <rect x="193" y="241" width="14" height="5" fill="#a08f74"/>
+      <g id="screws"></g>
+    </svg>
+  </div>
+  <div class="deck">
+    <button class="play" id="playBtn"></button>
+    <span class="counter" id="counter">00:00</span>
+  </div>
+  <p class="err" id="err">Recording not found. Check the file name in the code.</p>
+  <button class="back" id="backBtn">&larr; Back to the letter</button>
+  <audio id="voice" preload="metadata"></audio>
+</section>
+
+<script>
+const CONFIG = {
+  trackingNo: "8901188 222159",
+  steps: [
+    { title: "Dispatched", detail: "New Delhi · 22 Nov 2025", type: "done" },
+    { title: "Held up in transit", detail: "Unforeseen circumstances", type: "delayed" },
+    { title: "Out for delivery", detail: "Gurgaon · 22 Nov 2026", type: "done" },
+    { title: "Delivered", detail: "Gurgaon · Today", type: "delivered" }
+  ],
+  letterDate: "22 November 2025",
+  greeting: "Dear Agrim,",
+  letter: `
+Write your first paragraph here.
+
+Leave one empty line between paragraphs, like this.
+`,
+  signoff: "Yours always,",
+  name: "Vanshita",
+  audioFile: "voice.m4a"
+};
+
+const $ = id => document.getElementById(id);
+const PLAY = "\u25B6\uFE0E Play";
+const PAUSE = "\u275A\u275A Pause";
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+$('trackNo').textContent = CONFIG.trackingNo;
+CONFIG.steps.forEach((step, i) => {
+  const li = document.createElement('li');
+  li.className = step.type;
+  li.style.animationDelay = (0.4 + i * 0.7) + 's';
+  const title = document.createElement('div');
+  title.className = 'step-title';
+  title.textContent = step.title;
+  if (step.type === 'delayed') {
+    const t = document.createElement('span');
+    t.className = 'ticket';
+    t.textContent = 'DELAYED';
+    title.appendChild(t);
+  }
+  const detail = document.createElement('div');
+  detail.className = 'step-detail';
+  detail.textContent = step.detail;
+  li.append(title, detail);
+  $('timeline').appendChild(li);
+});
+$('openMail').style.animationDelay = (0.6 + CONFIG.steps.length * 0.7) + 's';
+$('openMail').addEventListener('click', () => show('envelopeScreen'));
+
+let opened = false;
+$('envelope').addEventListener('click', () => {
+  if (opened) return;
+  opened = true;
+  $('envelope').classList.add('open');
+  setTimeout(() => { buildLetter(); show('letterScreen'); }, 1700);
+});
+
+function buildLetter() {
+  $('letterDate').textContent = CONFIG.letterDate;
+  $('greeting').textContent = CONFIG.greeting;
+  const paras = CONFIG.letter.trim().split(/\n\s*\n/);
+  paras.forEach((text, i) => {
+    const p = document.createElement('p');
+    p.textContent = text.trim();
+    p.style.animationDelay = (0.5 + i * 0.5) + 's';
+    $('letterBody').appendChild(p);
+  });
+  $('signoff').textContent = CONFIG.signoff;
+  $('name').textContent = CONFIG.name;
+  $('after').style.animationDelay = (0.8 + paras.length * 0.5) + 's';
+}
+
+$('toTape').addEventListener('click', () => show('tapeScreen'));
+$('backBtn').addEventListener('click', () => show('letterScreen'));
+
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  parent.appendChild(e);
+  return e;
+}
+function makeHub(cx, cy) {
+  const g = el('g', {}, $('hubs'));
+  el('circle', { cx, cy, r: 20, fill: '#e6e2da', stroke: '#b5b0a6' }, g);
+  el('circle', { cx, cy, r: 12, fill: '#1b1916' }, g);
+  for (let k = 0; k < 6; k++) {
+    el('rect', { x: cx - 2, y: cy - 12, width: 4, height: 5, fill: '#e6e2da', transform: `rotate(${k * 60} ${cx} ${cy})` }, g);
+  }
+  return g;
+}
+const hubL = makeHub(115, 121);
+const hubR = makeHub(285, 121);
+
+[[20, 20], [380, 20], [20, 234], [380, 234], [200, 210]].forEach(([x, y], i) => {
+  const g = el('g', {}, $('screws'));
+  el('circle', { cx: x, cy: y, r: 5.5, fill: '#8c8985', stroke: '#4b4946' }, g);
+  const a = 20 + i * 35;
+  el('line', { x1: x - 4, y1: y, x2: x + 4, y2: y, stroke: '#4b4946', 'stroke-width': 1.5, transform: `rotate(${a} ${x} ${y})` }, g);
+  el('line', { x1: x, y1: y - 4, x2: x, y2: y + 4, stroke: '#4b4946', 'stroke-width': 1.5, transform: `rotate(${a} ${x} ${y})` }, g);
+});
+
+const audio = $('voice');
+const playBtn = $('playBtn');
+const packL = $('packL');
+const packR = $('packR');
+const R_MIN = 26, R_MAX = 62, TAPE_SPEED = 112;
+let angL = 0, angR = 0, last = null, rafId = null;
+
+audio.src = CONFIG.audioFile;
+playBtn.textContent = PLAY;
+
+function progress() {
+  return audio.duration ? Math.min(audio.currentTime / audio.duration, 1) : 0;
+}
+function radii(p) {
+  const a = R_MIN * R_MIN, b = R_MAX * R_MAX;
+  return [Math.sqrt(a + (b - a) * (1 - p)), Math.sqrt(a + (b - a) * p)];
+}
+function draw() {
+  const [rl, rr] = radii(progress());
+  packL.setAttribute('r', rl.toFixed(1));
+  packR.setAttribute('r', rr.toFixed(1));
+  hubL.setAttribute('transform', `rotate(${angL.toFixed(1)} 115 121)`);
+  hubR.setAttribute('transform', `rotate(${angR.toFixed(1)} 285 121)`);
+}
+function tick(t) {
+  if (last !== null) {
+    const dt = (t - last) / 1000;
+    const [rl, rr] = radii(progress());
+    angL -= (TAPE_SPEED / rl) * dt * 180 / Math.PI;
+    angR -= (TAPE_SPEED / rr) * dt * 180 / Math.PI;
+  }
+  last = t;
+  draw();
+  rafId = requestAnimationFrame(tick);
+}
+function fmt(s) {
+  s = Math.floor(s || 0);
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+
+playBtn.addEventListener('click', () => {
+  if (audio.paused) {
+    audio.play().catch(() => { $('err').style.display = 'block'; });
+  } else {
+    audio.pause();
+  }
+});
+audio.addEventListener('play', () => {
+  playBtn.textContent = PAUSE;
+  last = null;
+  if (!rafId) rafId = requestAnimationFrame(tick);
+});
+audio.addEventListener('pause', () => {
+  playBtn.textContent = PLAY;
+  cancelAnimationFrame(rafId);
+  rafId = null;
+  draw();
+});
+audio.addEventListener('ended', () => { playBtn.textContent = "\u25B6\uFE0E Play again"; });
+audio.addEventListener('timeupdate', () => { $('counter').textContent = fmt(audio.currentTime); });
+audio.addEventListener('loadedmetadata', draw);
+audio.addEventListener('error', () => { $('err').style.display = 'block'; });
+</script>
+</body>
+</html>
