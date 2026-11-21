@@ -126,6 +126,7 @@ textarea:focus{border-color:#de7491}
 .srow svg{width:22px;height:18px;fill:var(--c);stroke:var(--cd);stroke-width:1.4}
 .srow svg.off{fill:transparent;stroke:rgba(120,90,110,.3)}
 .srow .hand{margin:0;font-size:1.25rem}
+.bf.far{z-index:3;opacity:.7}
 </style>
 </head>
 <body>
@@ -222,7 +223,10 @@ const CONFIG = {
   name: "Agrim",
   signature: "Yours, always",
   formspreeId: "xrpqaqwn",        // paste your Formspree form ID here, e.g. "xyzabcde"
-  startMonth: "auto",     // "auto" = month he first opens it, or e.g. "December"
+  startMonth: "December",     // "auto" = month he first opens it, or e.g. "December"
+  onScreen: 6,            // promise butterflies flying at once
+  farAway: 5,             // tiny background butterflies (can't be caught)
+
   promises: [
     "I promise to love you a little more every single day.",
     "I promise not to stay angry at you for more than five minutes. Okay, ten. Fifteen, maximum.",
@@ -336,7 +340,7 @@ class Fly{
       this.a+=(.55*Math.sin(t*.31+p[0])+.35*Math.sin(t*.67+p[1])+.22*Math.sin(t*1.23+p[2]))*dt;
       const bot=H-(document.body.classList.contains("catching")?130:60);
       if(this.x<50||this.x>W-50||this.y<80||this.y>bot) this.a+=angDiff(Math.atan2(H*.42-this.y,W/2-this.x),this.a)*Math.min(1,1.5*dt);
-      for(const o of flies){ if(o===this||o.state!=="wander")continue; const dx=this.x-o.x,dy=this.y-o.y,d=Math.hypot(dx,dy); if(d>0&&d<120){const f=(120-d)*.7*dt/d;this.x+=dx*f;this.y+=dy*f;} }
+      for(const o of flies){ if(o===this||o.far||this.far||o.state!=="wander")continue; const dx=this.x-o.x,dy=this.y-o.y,d=Math.hypot(dx,dy); if(d>0&&d<120){const f=(120-d)*.7*dt/d;this.x+=dx*f;this.y+=dy*f;} }
       const sp=this.v*(.82+.28*Math.sin(t*1.9+p[1]));
       this.x+=Math.cos(this.a)*sp*dt; this.y+=Math.sin(this.a)*sp*dt; this.rot=this.a+P/2;
     } else if(this.state==="perch"){
@@ -412,10 +416,16 @@ function fillSlot(i,p){ const s=$("slots").children[i]; s.style.setProperty("--c
 function updateCount(){ $("count").textContent=`${S.caught.length} of 12 promises caught`; }
 function topUp(){
   const live=flies.filter(f=>f.catchable&&f.state==="wander").length;
-  const need=Math.min(3,12-S.caught.length)-live-pending;
-  for(let k=0;k<need;k++){ pending++; setTimeout(()=>{pending--;new Fly(true);},400+k*1100); }
+  const need=Math.min(CONFIG.onScreen,12-S.caught.length)-live-pending;
+  for(let k=0;k<need;k++){ pending++; setTimeout(()=>{pending--;const f=new Fly(true);f.s=f.sc=f.s*.88;},300+k*650); }
 }
-function ensureDecor(){ const n=flies.filter(f=>!f.catchable&&f.state==="wander").length; for(let k=n;k<2;k++) setTimeout(()=>new Fly(false),600+k*1400); }
+function ensureDecor(){ const n=flies.filter(f=>!f.catchable&&!f.far&&f.state==="wander").length; for(let k=n;k<2;k++) setTimeout(()=>new Fly(false),600+k*1400); }
+function keepFar(){
+  const n=flies.filter(f=>f.far&&f.state==="wander").length;
+  if(n<CONFIG.farAway){ const f=new Fly(false); f.far=true; f.el.classList.add("far"); f.v=rand(24,34); f.s=f.sc=baseScale()*rand(.32,.45); f.dustT=1e9; }
+}
+setInterval(keepFar,1500);
+
 function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("on"); setTimeout(()=>t.classList.remove("on"),2300); }
 function finish(){
   busy=true; setTimeout(()=>toast("All twelve, all yours."),300);
