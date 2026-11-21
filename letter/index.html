@@ -35,7 +35,6 @@
   .screen.active { display: block; animation: rise .8s ease both; }
   @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-  @keyframes spin { to { transform: rotate(360deg); } }
 
   .sheet {
     background: var(--paper);
@@ -125,48 +124,19 @@
   .after { opacity: 0; animation: rise .8s ease forwards; }
   .signoff { margin-top: 22px; font-size: 16px; }
   .name { font-family: 'Caveat', cursive; font-size: 34px; line-height: 1.1; }
-  .ps { margin: 30px 0 16px; font-family: 'Caveat', cursive; font-size: 24px; }
+  .ps { margin: 30px 0 18px; font-family: 'Caveat', cursive; font-size: 24px; }
+  .btn-outline {
+    display: block; width: 100%;
+    font-family: 'Special Elite', monospace; font-size: 16px;
+    color: var(--ink); background: transparent;
+    border: 2px solid var(--ink); border-radius: 4px; padding: 12px;
+    box-shadow: 0 3px 0 var(--ink); cursor: pointer;
+  }
+  .btn-outline:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
 
-  .cassette {
-    position: relative; width: 100%; aspect-ratio: 1.58;
-    background: #2c2a29; border-radius: 12px; padding: 5% 5% 0;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, .3);
-  }
-  .screw { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: #8d8a86; box-shadow: inset 0 0 0 2px #5b5855; }
-  .s1 { top: 7px; left: 7px; } .s2 { top: 7px; right: 7px; } .s3 { bottom: 7px; left: 7px; } .s4 { bottom: 7px; right: 7px; }
-  .label { position: relative; height: 70%; background: #3d3a38; border-radius: 6px; }
-  .tape {
-    position: absolute; top: 9%; left: 50%; width: 62%; z-index: 2;
-    transform: translateX(-50%) rotate(-2.5deg);
-    background: #efe3c2; color: #2a2522;
-    font-family: 'Permanent Marker', cursive; font-size: clamp(18px, 6vw, 26px);
-    text-align: center; padding: 4px 0 2px;
-    clip-path: polygon(2% 0, 98% 0, 100% 15%, 97% 30%, 100% 45%, 96% 60%, 100% 75%, 97% 90%, 99% 100%, 1% 100%, 3% 85%, 0 70%, 3% 55%, 0 40%, 3% 25%, 0 12%);
-  }
-  .window {
-    position: absolute; left: 14%; right: 14%; top: 44%; height: 42%;
-    background: #1b1a19; border-radius: 40px;
-    display: flex; align-items: center; justify-content: space-between; padding: 0 8%;
-  }
-  .reel {
-    width: 22%; aspect-ratio: 1; border-radius: 50%;
-    border: 5px solid #6b4a2e;
-    background:
-      radial-gradient(circle, #1b1a19 0 20%, transparent 21%),
-      repeating-conic-gradient(#ece8e2 0 40deg, #8f8a84 40deg 60deg);
-  }
-  .playing .reel { animation: spin 2.4s linear infinite; }
-  .base {
-    position: absolute; left: 18%; right: 18%; bottom: 0; height: 20%;
-    background: #3d3a38; clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
-  }
-  .base::before, .base::after {
-    content: ''; position: absolute; bottom: 30%; width: 8%; aspect-ratio: 1;
-    border-radius: 50%; background: #1b1a19;
-  }
-  .base::before { left: 22%; } .base::after { right: 22%; }
-
-  .deck { display: flex; align-items: center; gap: 14px; margin-top: 18px; }
+  .tape-wrap { padding: 36px 0 8px; filter: drop-shadow(0 14px 18px rgba(40, 25, 10, .4)); }
+  #cassette { display: block; width: 100%; height: auto; }
+  .deck { display: flex; align-items: center; gap: 14px; margin-top: 22px; }
   .play {
     flex: 1; font-family: 'Special Elite', monospace; font-size: 17px; padding: 13px;
     border: 2px solid var(--ink); background: var(--paper-dark); color: var(--ink);
@@ -174,7 +144,12 @@
   }
   .play:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
   .counter { font-size: 18px; background: #2c2a29; color: #efe3c2; padding: 10px 12px; border-radius: 4px; letter-spacing: 2px; }
-  .err { display: none; margin-top: 10px; font-size: 13px; color: var(--red); }
+  .err { display: none; margin-top: 12px; font-size: 13px; color: var(--red); text-align: center; }
+  .back {
+    display: block; margin: 28px auto 0; background: none; border: none;
+    font-family: 'Caveat', cursive; font-size: 22px; color: var(--ink);
+    text-decoration: underline; cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -213,124 +188,48 @@
       <p class="signoff" id="signoff"></p>
       <p class="name" id="name"></p>
       <p class="ps">P.S. Some things are better said out loud.</p>
-      <div class="cassette" id="cassette">
-        <span class="screw s1"></span><span class="screw s2"></span>
-        <span class="screw s3"></span><span class="screw s4"></span>
-        <div class="label">
-          <div class="tape">for Agrim</div>
-          <div class="window"><div class="reel"></div><div class="reel"></div></div>
-        </div>
-        <div class="base"></div>
-      </div>
-      <div class="deck">
-        <button class="play" id="playBtn"></button>
-        <span class="counter" id="counter">00:00</span>
-      </div>
-      <p class="err" id="err">Recording not found. Check the file name in the code.</p>
+      <button class="btn-outline" id="toTape">There's a tape in the envelope &rarr;</button>
     </div>
-    <audio id="voice" preload="metadata"></audio>
   </div></div>
 </section>
 
-<script>
-const CONFIG = {
-  trackingNo: "8901188 222159",
-  steps: [
-    { title: "Dispatched", detail: "New Delhi · 22 Nov 2025", type: "done" },
-    { title: "Held up in transit", detail: "Unforeseen circumstances", type: "delayed" },
-    { title: "Out for delivery", detail: "Gurgaon · 22 Nov 2026", type: "done" },
-    { title: "Delivered", detail: "Gurgaon · Today", type: "delivered" }
-  ],
-  letterDate: "22 November 2025",
-  greeting: "Dear Agrim,",
-  letter: `
-Write your first paragraph here.
+<section id="tapeScreen" class="screen">
+  <div class="tape-wrap">
+    <svg id="cassette" viewBox="0 0 400 254" role="img" aria-label="A cassette tape labelled for Agrim">
+      <defs>
+        <linearGradient id="shell" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3b3937"/>
+          <stop offset="1" stop-color="#222120"/>
+        </linearGradient>
+        <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2f2d2b"/>
+          <stop offset="1" stop-color="#262423"/>
+        </linearGradient>
+        <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ffffff" stop-opacity=".12"/>
+          <stop offset=".45" stop-color="#ffffff" stop-opacity="0"/>
+          <stop offset="1" stop-color="#ffffff" stop-opacity=".05"/>
+        </linearGradient>
+        <clipPath id="win"><rect x="68" y="86" width="264" height="70" rx="8"/></clipPath>
+      </defs>
 
-Leave one empty line between paragraphs, like this.
-`,
-  signoff: "Yours always,",
-  name: "Vanshita",
-  audioFile: "voice.m4a"
-};
+      <rect x="2" y="2" width="396" height="250" rx="14" fill="url(#shell)" stroke="#0e0d0c" stroke-width="2"/>
+      <rect x="9" y="9" width="382" height="236" rx="10" fill="none" stroke="#ffffff" stroke-opacity=".06"/>
+      <rect x="40" y="2" width="16" height="7" fill="#121110"/>
+      <rect x="344" y="2" width="16" height="7" fill="#121110"/>
+      <rect x="26" y="20" width="348" height="156" rx="7" fill="url(#panel)" stroke="#000000" stroke-opacity=".45"/>
 
-const $ = id => document.getElementById(id);
-const PLAY = "\u25B6\uFE0E Play";
-const PAUSE = "\u275A\u275A Pause";
+      <rect x="68" y="86" width="264" height="70" rx="8" fill="#14120f"/>
+      <g clip-path="url(#win)">
+        <circle id="packL" cx="115" cy="121" r="62" fill="#4b301e" stroke="#2c1b10" stroke-width="1"/>
+        <circle id="packR" cx="285" cy="121" r="26" fill="#4b301e" stroke="#2c1b10" stroke-width="1"/>
+      </g>
+      <g id="hubs"></g>
+      <rect x="68" y="86" width="264" height="70" rx="8" fill="url(#glass)" stroke="#000000" stroke-opacity=".6"/>
 
-function show(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  $(id).classList.add('active');
-  window.scrollTo(0, 0);
-}
+      <g transform="rotate(-2.5 200 52)">
+        <polygon points="104,34 296,34 299,40 295,46 300,52 295,58 299,64 296,70 104,70 101,64 105,58 100,52 104,46 100,40" fill="#ece0bd" opacity=".96"/>
+        <text x="200" y="61" text-anchor="middle" font-family="'Permanent Marker', cursive" font-size="26" fill="#2a2522">for Agrim</text>
+      </g>
 
-$('trackNo').textContent = CONFIG.trackingNo;
-CONFIG.steps.forEach((step, i) => {
-  const li = document.createElement('li');
-  li.className = step.type;
-  li.style.animationDelay = (0.4 + i * 0.7) + 's';
-  const title = document.createElement('div');
-  title.className = 'step-title';
-  title.textContent = step.title;
-  if (step.type === 'delayed') {
-    const t = document.createElement('span');
-    t.className = 'ticket';
-    t.textContent = 'DELAYED';
-    title.appendChild(t);
-  }
-  const detail = document.createElement('div');
-  detail.className = 'step-detail';
-  detail.textContent = step.detail;
-  li.append(title, detail);
-  $('timeline').appendChild(li);
-});
-$('openMail').style.animationDelay = (0.6 + CONFIG.steps.length * 0.7) + 's';
-$('openMail').addEventListener('click', () => show('envelopeScreen'));
-
-let opened = false;
-$('envelope').addEventListener('click', () => {
-  if (opened) return;
-  opened = true;
-  $('envelope').classList.add('open');
-  setTimeout(() => { buildLetter(); show('letterScreen'); }, 1700);
-});
-
-function buildLetter() {
-  $('letterDate').textContent = CONFIG.letterDate;
-  $('greeting').textContent = CONFIG.greeting;
-  const paras = CONFIG.letter.trim().split(/\n\s*\n/);
-  paras.forEach((text, i) => {
-    const p = document.createElement('p');
-    p.textContent = text.trim();
-    p.style.animationDelay = (0.5 + i * 0.5) + 's';
-    $('letterBody').appendChild(p);
-  });
-  $('signoff').textContent = CONFIG.signoff;
-  $('name').textContent = CONFIG.name;
-  $('after').style.animationDelay = (0.8 + paras.length * 0.5) + 's';
-}
-
-const audio = $('voice');
-const playBtn = $('playBtn');
-audio.src = CONFIG.audioFile;
-playBtn.textContent = PLAY;
-
-function fmt(s) {
-  s = Math.floor(s || 0);
-  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
-}
-
-playBtn.addEventListener('click', () => {
-  if (audio.paused) {
-    audio.play().catch(() => { $('err').style.display = 'block'; });
-  } else {
-    audio.pause();
-  }
-});
-audio.addEventListener('play', () => { $('cassette').classList.add('playing'); playBtn.textContent = PAUSE; });
-audio.addEventListener('pause', () => { $('cassette').classList.remove('playing'); playBtn.textContent = PLAY; });
-audio.addEventListener('ended', () => { playBtn.textContent = "\u25B6\uFE0E Play again"; });
-audio.addEventListener('timeupdate', () => { $('counter').textContent = fmt(audio.currentTime); });
-audio.addEventListener('error', () => { $('err').style.display = 'block'; });
-</script>
-</body>
-</html>
+      
