@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>You've got mail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Permanent+Marker&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4e9cd;
+    --paper-dark: #e8d6ad;
+    --ink: #3b2f25;
+    --faded: #7d6b55;
+    --blue: #2f4fa0;
+    --red: #b8372b;
+    --pink: #e46a76;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 28px 16px 48px;
+    background: #d8c39a;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(110, 70, 25, .18), transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(110, 70, 25, .2), transparent 45%);
+    font-family: 'Special Elite', 'Courier New', monospace;
+    color: var(--ink);
+  }
+  .screen { display: none; width: 100%; max-width: 440px; }
+  .screen.active { display: block; animation: rise .8s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .sheet {
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 80% 12%, rgba(160, 110, 40, .16), transparent 22%),
+      radial-gradient(circle at 12% 78%, rgba(160, 110, 40, .14), transparent 25%);
+    padding: 10px;
+    border-radius: 3px;
+    box-shadow: 0 10px 30px rgba(60, 40, 15, .25);
+  }
+  .inner { position: relative; border: 3px dashed var(--blue); padding: 26px 20px; }
+
+  .kicker { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--faded); }
+  h1 { font-family: 'Caveat', cursive; font-size: 40px; font-weight: 700; margin: 6px 0 10px; line-height: 1.1; }
+  .barcode {
+    height: 34px; width: 70%;
+    background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 4px, var(--ink) 4px 5px, transparent 5px 8px, var(--ink) 8px 11px, transparent 11px 13px);
+  }
+  .track-no { font-size: 13px; color: var(--faded); margin: 4px 0 24px; }
+  .timeline { list-style: none; border-left: 2px dotted var(--faded); margin: 0 0 26px 8px; padding-left: 22px; }
+  .timeline li { position: relative; margin-bottom: 20px; opacity: 0; animation: rise .6s ease forwards; }
+  .timeline li::before {
+    content: ''; position: absolute; left: -30px; top: 3px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--ink); border: 2px solid var(--ink);
+  }
+  .timeline li.delayed::before { background: var(--pink); border-color: var(--red); }
+  .timeline li.delivered::before { background: var(--blue); border-color: var(--blue); box-shadow: 0 0 0 5px rgba(47, 79, 160, .18); }
+  .step-title { font-size: 16px; }
+  .step-detail { font-size: 13px; color: var(--faded); margin-top: 3px; }
+  .ticket {
+    display: inline-block; margin-left: 8px; padding: 3px 9px;
+    background: var(--pink); color: #3a1414; font-size: 11px; letter-spacing: 1px;
+    border-radius: 3px; outline: 1px dashed rgba(58, 20, 20, .5); outline-offset: -4px;
+    transform: rotate(-4deg);
+  }
+  .btn {
+    display: block; width: 100%;
+    font-family: 'Special Elite', monospace; font-size: 17px;
+    color: var(--paper); background: var(--ink);
+    border: none; border-radius: 4px; padding: 14px;
+    cursor: pointer; opacity: 0; animation: rise .6s ease forwards;
+  }
+
+  .stage { padding-top: 46%; }
+  .envelope { position: relative; width: 100%; aspect-ratio: 3 / 2; cursor: pointer; perspective: 900px; }
+  .env-back { position: absolute; inset: 0; background: #d9c08f; border-radius: 4px; box-shadow: 0 10px 30px rgba(60, 40, 15, .3); }
+  .peek {
+    position: absolute; left: 7%; right: 7%; top: 6%; height: 86%; z-index: 2;
+    background: var(--paper); border-radius: 2px;
+    transition: transform .8s ease .55s;
+  }
+  .pocket {
+    position: absolute; inset: 0; z-index: 3; background: var(--paper-dark);
+    clip-path: polygon(0 0, 50% 56%, 100% 0, 100% 100%, 0 100%);
+  }
+  .flap {
+    position: absolute; left: 0; right: 0; top: 0; height: 62%; z-index: 4;
+    background: #e2cb9c; clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transition: transform .6s ease, z-index 0s linear .3s;
+  }
+  .seal {
+    position: absolute; left: 50%; top: 62%; width: 58px; height: 58px; margin: -29px 0 0 -29px; z-index: 5;
+    border-radius: 47% 53% 50% 50% / 52% 48% 52% 48%;
+    background: var(--red); color: #f6d2c8;
+    font-family: 'Caveat', cursive; font-size: 28px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 0 0 5px rgba(0, 0, 0, .12), 0 3px 6px rgba(0, 0, 0, .25);
+    transition: opacity .3s, transform .3s;
+  }
+  .open .seal { opacity: 0; transform: scale(.6); }
+  .open .flap { transform: rotateX(180deg); z-index: 1; }
+  .open .peek { transform: translateY(-58%); }
+  .hint { text-align: center; margin-top: 24px; font-family: 'Caveat', cursive; font-size: 26px; animation: bob 1.8s ease-in-out infinite; }
+
+  .postmark {
+    position: absolute; top: 16px; right: 16px; width: 78px; height: 78px;
+    border: 2px solid rgba(184, 55, 43, .55); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    font-size: 10px; line-height: 1.4; letter-spacing: 1px; color: rgba(184, 55, 43, .7);
+    transform: rotate(-12deg);
+  }
+  .date { font-size: 13px; color: var(--faded); margin-bottom: 26px; }
+  .greeting { font-size: 18px; margin-bottom: 16px; }
+  .letter-body p { font-size: 16px; line-height: 1.85; margin-bottom: 16px; opacity: 0; animation: rise .7s ease forwards; }
+  .after { opacity: 0; animation: rise .8s ease forwards; }
+  .signoff { margin-top: 22px; font-size: 16px; }
+  .name { font-family: 'Caveat', cursive; font-size: 34px; line-height: 1.1; }
+  .ps { margin: 30px 0 16px; font-family: 'Caveat', cursive; font-size: 24px; }
+
+  .cassette {
+    position: relative; width: 100%; aspect-ratio: 1.58;
+    background: #2c2a29; border-radius: 12px; padding: 5% 5% 0;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .3);
+  }
+  .screw { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: #8d8a86; box-shadow: inset 0 0 0 2px #5b5855; }
+  .s1 { top: 7px; left: 7px; } .s2 { top: 7px; right: 7px; } .s3 { bottom: 7px; left: 7px; } .s4 { bottom: 7px; right: 7px; }
+  .label { position: relative; height: 70%; background: #3d3a38; border-radius: 6px; }
+  .tape {
+    position: absolute; top: 9%; left: 50%; width: 62%; z-index: 2;
+    transform: translateX(-50%) rotate(-2.5deg);
+    background: #efe3c2; color: #2a2522;
+    font-family: 'Permanent Marker', cursive; font-size: clamp(18px, 6vw, 26px);
+    text-align: center; padding: 4px 0 2px;
+    clip-path: polygon(2% 0, 98% 0, 100% 15%, 97% 30%, 100% 45%, 96% 60%, 100% 75%, 97% 90%, 99% 100%, 1% 100%, 3% 85%, 0 70%, 3% 55%, 0 40%, 3% 25%, 0 12%);
+  }
+  .window {
+    position: absolute; left: 14%; right: 14%; top: 44%; height: 42%;
+    background: #1b1a19; border-radius: 40px;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 8%;
+  }
+  .reel {
+    width: 22%; aspect-ratio: 1; border-radius: 50%;
+    border: 5px solid #6b4a2e;
+    background:
+      radial-gradient(circle, #1b1a19 0 20%, transparent 21%),
+      repeating-conic-gradient(#ece8e2 0 40deg, #8f8a84 40deg 60deg);
+  }
+  .playing .reel { animation: spin 2.4s linear infinite; }
+  .base {
+    position: absolute; left: 18%; right: 18%; bottom: 0; height: 20%;
+    background: #3d3a38; clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+  }
+  .base::before, .base::after {
+    content: ''; position: absolute; bottom: 30%; width: 8%; aspect-ratio: 1;
+    border-radius: 50%; background: #1b1a19;
+  }
+  .base::before { left: 22%; } .base::after { right: 22%; }
+
+  .deck { display: flex; align-items: center; gap: 14px; margin-top: 18px; }
+  .play {
+    flex: 1; font-family: 'Special Elite', monospace; font-size: 17px; padding: 13px;
+    border: 2px solid var(--ink); background: var(--paper-dark); color: var(--ink);
+    border-radius: 4px; cursor: pointer; box-shadow: 0 3px 0 var(--ink);
+  }
+  .play:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+  .counter { font-size: 18px; background: #2c2a29; color: #efe3c2; padding: 10px 12px; border-radius: 4px; letter-spacing: 2px; }
+  .err { display: none; margin-top: 10px; font-size: 13px; color: var(--red); }
+</style>
+</head>
+<body>
+
+<section id="trackScreen" class="screen active">
+  <div class="sheet"><div class="inner">
+    <p class="kicker">Parcel tracking</p>
+    <h1>Your mail has arrived</h1>
+    <div class="barcode"></div>
+    <p class="track-no">Tracking no. <span id="trackNo"></span></p>
+    <ol class="timeline" id="timeline"></ol>
+    <button class="btn" id="openMail">Open your mail</button>
+  </div></div>
+</section>
+
+<section id="envelopeScreen" class="screen">
+  <div class="stage">
+    <div class="envelope" id="envelope" role="button" aria-label="Open the envelope">
+      <div class="env-back"></div>
+      <div class="peek"></div>
+      <div class="pocket"></div>
+      <div class="flap"></div>
+      <div class="seal">&#9829;&#xFE0E;</div>
+    </div>
+  </div>
+  <p class="hint">Tap the seal to open</p>
+</section>
+
+<section id="letterScreen" class="screen">
+  <div class="sheet"><div class="inner">
+    <div class="postmark">NEW DELHI<br>2025</div>
+    <p class="date" id="letterDate"></p>
+    <p class="greeting" id="greeting"></p>
+    <div class="letter-body" id="letterBody"></div>
+    <div class="after" id="after">
+      <p class="signoff" id="signoff"></p>
+      <p class="name" id="name"></p>
+      <p class="ps">P.S. Some things are better said out loud.</p>
+      <div class="cassette" id="cassette">
+        <span class="screw s1"></span><span class="screw s2"></span>
+        <span class="screw s3"></span><span class="screw s4"></span>
+        <div class="label">
+          <div class="tape">for Agrim</div>
+          <div class="window"><div class="reel"></div><div class="reel"></div></div>
+        </div>
+        <div class="base"></div>
+      </div>
+      <div class="deck">
+        <button class="play" id="playBtn"></button>
+        <span class="counter" id="counter">00:00</span>
+      </div>
+      <p class="err" id="err">Recording not found. Check the file name in the code.</p>
+    </div>
+    <audio id="voice" preload="metadata"></audio>
+  </div></div>
+</section>
+
+<script>
+const CONFIG = {
+  trackingNo: "8901188 222159",
+  steps: [
+    { title: "Dispatched", detail: "New Delhi · 22 Nov 2025", type: "done" },
+    { title: "Held up in transit", detail: "Unforeseen circumstances", type: "delayed" },
+    { title: "Out for delivery", detail: "Gurgaon · 22 Nov 2026", type: "done" },
+    { title: "Delivered", detail: "Gurgaon · Today", type: "delivered" }
+  ],
+  letterDate: "22 November 2025",
+  greeting: "Dear Agrim,",
+  letter: `
+Write your first paragraph here.
+
+Leave one empty line between paragraphs, like this.
+`,
+  signoff: "Yours always,",
+  name: "Vanshita",
+  audioFile: "voice.m4a"
+};
+
+const $ = id => document.getElementById(id);
+const PLAY = "\u25B6\uFE0E Play";
+const PAUSE = "\u275A\u275A Pause";
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+$('trackNo').textContent = CONFIG.trackingNo;
+CONFIG.steps.forEach((step, i) => {
+  const li = document.createElement('li');
+  li.className = step.type;
+  li.style.animationDelay = (0.4 + i * 0.7) + 's';
+  const title = document.createElement('div');
+  title.className = 'step-title';
+  title.textContent = step.title;
+  if (step.type === 'delayed') {
+    const t = document.createElement('span');
+    t.className = 'ticket';
+    t.textContent = 'DELAYED';
+    title.appendChild(t);
+  }
+  const detail = document.createElement('div');
+  detail.className = 'step-detail';
+  detail.textContent = step.detail;
+  li.append(title, detail);
+  $('timeline').appendChild(li);
+});
+$('openMail').style.animationDelay = (0.6 + CONFIG.steps.length * 0.7) + 's';
+$('openMail').addEventListener('click', () => show('envelopeScreen'));
+
+let opened = false;
+$('envelope').addEventListener('click', () => {
+  if (opened) return;
+  opened = true;
+  $('envelope').classList.add('open');
+  setTimeout(() => { buildLetter(); show('letterScreen'); }, 1700);
+});
+
+function buildLetter() {
+  $('letterDate').textContent = CONFIG.letterDate;
+  $('greeting').textContent = CONFIG.greeting;
+  const paras = CONFIG.letter.trim().split(/\n\s*\n/);
+  paras.forEach((text, i) => {
+    const p = document.createElement('p');
+    p.textContent = text.trim();
+    p.style.animationDelay = (0.5 + i * 0.5) + 's';
+    $('letterBody').appendChild(p);
+  });
+  $('signoff').textContent = CONFIG.signoff;
+  $('name').textContent = CONFIG.name;
+  $('after').style.animationDelay = (0.8 + paras.length * 0.5) + 's';
+}
+
+const audio = $('voice');
+const playBtn = $('playBtn');
+audio.src = CONFIG.audioFile;
+playBtn.textContent = PLAY;
+
+function fmt(s) {
+  s = Math.floor(s || 0);
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+
+playBtn.addEventListener('click', () => {
+  if (audio.paused) {
+    audio.play().catch(() => { $('err').style.display = 'block'; });
+  } else {
+    audio.pause();
+  }
+});
+audio.addEventListener('play', () => { $('cassette').classList.add('playing'); playBtn.textContent = PAUSE; });
+audio.addEventListener('pause', () => { $('cassette').classList.remove('playing'); playBtn.textContent = PLAY; });
+audio.addEventListener('ended', () => { playBtn.textContent = "\u25B6\uFE0E Play again"; });
+audio.addEventListener('timeupdate', () => { $('counter').textContent = fmt(audio.currentTime); });
+audio.addEventListener('error', () => { $('err').style.display = 'block'; });
+</script>
+</body>
+</html>
